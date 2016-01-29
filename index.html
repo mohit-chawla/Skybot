@@ -1,0 +1,17 @@
+<!doctype html>
+<html>
+  <head>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      var socket = io.connect('');
+      socket.on('connect', function() {
+        console.log('connect');
+        setInterval(function() {
+          socket.emit('client', { random : Math.random() });
+        }, 3000);
+      });
+    </script>
+  </head>
+  <body>
+  </body>
+</html>
