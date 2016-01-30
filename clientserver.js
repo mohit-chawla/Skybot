@@ -13,6 +13,8 @@ var clientio  = require('socket.io-client');
 // connect to the main server
 var client    = clientio.connect('http://localhost:3013');
 
+
+
 io.sockets.on('connection', function (socket) {
   console.log('CLIENT IS CONNECTED IN');
 
@@ -34,6 +36,12 @@ io.sockets.on('connection', function (socket) {
 console.log('The client server is up.');
 
 // todo use a function returning this object here, didnt work initially so long coded it
-client.emit('job request', { counter: 1000, reqType: 'test 1', msg: 'for 1000', timeSt: JSON.stringify(new Date()) });
-client.emit('job request', { counter: 9000, reqType: 'test 2', msg: 'for 9000', timeSt: JSON.stringify(new Date()) });
-client.emit('job request', { counter: 90000, reqType: 'test 3', msg: 'for 90000', timeSt: JSON.stringify(new Date()) });
+client.emit('job request', { reqType: 1, req_id: 1, msg: 'for 1000', timeSt: JSON.stringify(new Date()) });
+client.emit('job request', { reqType: 2, req_id: 2, msg: 'for 90000', timeSt: JSON.stringify(new Date()) });
+client.emit('job request', { reqType: 2, req_id: 3, msg: 'for 90000', timeSt: JSON.stringify(new Date()) });
+client.emit('job request', { reqType: 1, req_id: 4, msg: 'for 1000', timeSt: JSON.stringify(new Date()) });
+client.emit('job request', { reqType: 1, req_id: 5, msg: 'for 1000', timeSt: JSON.stringify(new Date()) });
+client.emit('job request', { reqType: 2, req_id: 6, msg: 'for 90000', timeSt: JSON.stringify(new Date()) });
+
+
+client.emit('sending done');

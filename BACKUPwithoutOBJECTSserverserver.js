@@ -53,7 +53,7 @@ var utilityDropPoint = [0,100];
 //Storing the processing time taken by the server to process the types of requests (in milliseconds)
 //int processingTimeOfRequests[2] =  {10,10};
 var processingTimeOfRequests = 5;
-// final_queue_processing_order contains the REQUEST OBJECTS in the order ?required?
+
 var utility_results=[], final_queue_processing_order=[];
 
 //Function to generate a random number within an assigned limit
@@ -297,7 +297,7 @@ function mutate_scramble(arr, arr_index){
 /* ******kay constants and functions for ec approach. Definition ends here****** */
 
 io.sockets.on('connection', function (socket) {
-	console.log('We have a new socket connection: ',socket.id);
+  console.log('We have a new socket connection: ',socket.id);
   // create an array to store all the requests from client with this socket id
 
   // to process each job request, compute its execution time, and add this data to the request queue IN THE ORDER THEY COME
@@ -346,8 +346,8 @@ io.sockets.on('connection', function (socket) {
 
 
         // var arr[] = {1,2,1,2,1};
-        //Reference array to assign a "type" to each queued request-> not required, my request comes with a type
-        // var arr_input_type_reference = [1,2,2,1,1,2];
+        //Reference array to assign a "type" to each queued request 
+        var arr_input_type_reference = [1,2,2,1,1,2];
         console.log('queue to be evaluated: ',requestQueue);
         // for (var i = 0; i < MAX_REQUESTS; ++i)
         // {
@@ -356,15 +356,13 @@ io.sockets.on('connection', function (socket) {
         //   var x = generate_random_number(6);
         //   requestQueue[i].reqType = arr_input_type_reference[x];
         // }
-
-        // following is not required, since i'm getting my own request objects in requestQueue
-        // for (var i = 0; i < requestQueue.length; ++i)
-        // {
-        //   requestQueue[i].req_id=i;
-        //   //Generate a random number to be picked
-        //   var x = generate_random_number(6);
-        //   requestQueue[i].reqType = arr_input_type_reference[x];
-        // }
+        for (var i = 0; i < requestQueue.length; ++i)
+        {
+          requestQueue[i].req_id=i;
+          //Generate a random number to be picked
+          var x = generate_random_number(6);
+          requestQueue[i].reqType = arr_input_type_reference[x];
+        }
           // requestQueue[0].reqType=1;
           // requestQueue[1].reqType=2;
           // requestQueue[2].reqType=1;
@@ -390,20 +388,12 @@ io.sockets.on('connection', function (socket) {
         for (var i = 0; i < requestQueue.length; ++i)
         {
           console.log("%d    ",requestQueue[i].req_id);
-          // final_queue_processing_order.push(requestQueue[i].req_id);
-          final_queue_processing_order.push(requestQueue[i]);
+          final_queue_processing_order.push(requestQueue[i].req_id);
         }
         //Define array to be used in the generations
         // var arr[MAX_REQUESTS],arr_index[MAX_REQUESTS],orig_parent[MAX_REQUESTS];
-        // var arr=[],arr_index=[],orig_parent=[];
-        var arr=[];
+        var arr=[],arr_index=[],orig_parent=[];
         // for (var i = 0; i < MAX_REQUESTS; ++i)
-        // {
-        //   arr[i] = requestQueue[i].reqType;
-        //   arr_index[i] = requestQueue[i].req_id;
-        //   orig_parent[i] = requestQueue[i].req_id;
-        // }
-        // for (var i = 0; i < requestQueue.length; ++i)
         // {
         //   arr[i] = requestQueue[i].reqType;
         //   arr_index[i] = requestQueue[i].req_id;
@@ -411,12 +401,14 @@ io.sockets.on('connection', function (socket) {
         // }
         for (var i = 0; i < requestQueue.length; ++i)
         {
-          arr[i] = requestQueue[i];
+          arr[i] = requestQueue[i].reqType;
+          arr_index[i] = requestQueue[i].req_id;
+          orig_parent[i] = requestQueue[i].req_id;
         }
 
         //Brute force starts here
         console.log("\n------------BRUTE FORCE-------------\n");
-          //2-D ARRAY THAT STORES ALL POSSIBLE PERMUATIONS OF REQUESTS QUEUE
+        //2-D ARRAY THAT STORES ALL POSSIBLE PERMUATIONS OF REQUESTS QUEUE
           // var all_permuatations_req[MAX_REQUESTS][MAX_REQUESTS];
           var all_permuatations_req=[];
           
