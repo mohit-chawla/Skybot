@@ -1,0 +1,497 @@
+// console.time uses labels. labels not used because any duplicacy in labels(or their scoping) may fuck up.
+// console.time('processingTime');
+var hrstart = process.hrtime(), n;
+if(data.reqType === 1){
+  n = 1000;
+  fitnessValue+=1;
+}else{
+  n = 90000;
+  fitnessValue-=1;
+}
+
+// console.log('request sent at' , data.timeSt); // comes with the data from client server
+var hrend = process.hrtime(hrstart);
+var hrendMilli = (1000 * hrend[0]) + (hrend[1]/1000000);
+timeSpent += hrendMilli;
+
+data.timeSpent = hrendMilli;
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// fs.writeFile(__dirname + '/test.txt', "", function(err) {
+//       if(err) {
+//           return console.log(err);
+//       }
+//       console.log("empty file for computation logs created!");
+//   });
+
+// bad idea to write to a txt file, THIS may block the node thread as things are paused until this happens
+// writing to file starts
+var stream = fs.createWriteStream(__dirname + '/test.txt');
+stream.once('open', function(fd) {
+    obj = {
+        name: "kay",
+        age: 19
+    };
+    stream.write("Line 1 out\n");
+    stream.write("line 2 out\n");
+    stream.write(JSON.stringify(obj, null, 2));
+    stream.end();
+});
+// writing to file ends
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+function swapItemsInArray(obj){
+  //Pick two positions randomly
+  var pos1 = generate_random_number(obj.item.length);
+  var pos2 = generate_random_number(obj.item.length);
+  console.log('pos 1 ',pos1,' pos2 ',pos2);
+  o.x = obj.item[pos1];
+  o.y = obj.item[pos2];
+  swap(o);
+  obj.item[pos1] = o.x;
+  obj.item[pos2] = o.y;
+}
+
+var arrayTest = [0,1,2,3,4,5];
+obj={};
+obj.item = arrayTest;
+console.log('old ',arrayTest);
+swapItemsInArray(obj);
+arrayTest = obj.item;
+console.log('new ',arrayTest);
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+
+
+/*
+function perms(data) {
+    if (!(data.item instanceof Array)) {
+        throw new TypeError("input data must be an Array");
+    }
+
+    data.item = data.item.slice();  // make a copy
+    var permutations = [],
+        stack = [];
+
+    function doPerm() {
+        if (data.item.length == 0) {
+            permutations.push(stack.slice());
+        }
+        for (var i = 0; i < data.item.length; i++) {
+            var x = data.item.splice(i, 1);
+            stack.push(x);
+            doPerm();
+            stack.pop();
+            data.item.splice(i, 0, x);
+        }
+    }
+
+    doPerm();
+    return permutations;
+}
+var obj={};
+// var input = "abcd".split('');
+var input = [1,2,3,4];
+obj.item = input;
+var result = perms(obj);
+for (var i = 0; i < result.length; i++) {
+    // do input.length and run loop
+    
+    result[i] = result[i].join('');
+}
+console.log('after result: ',result);
+*/
+/*
+var permutate = (function() {
+    var results = [];   
+    
+    function doPermute(input, output, used, size, level) {        
+        if (size == level) {
+            var word = output.join('');
+            abc++;
+            console.log("abc ",abc ," " ,output);
+            myResults.push(output);
+            results.push(word);
+            return;
+        } 
+        level++;
+        for (var i = 0; i < input.length; i++) {
+            if (used[i]) {
+                continue;
+            }            
+            used[i] = true;
+            output.push(input[i]);
+            doPermute(input, output, used, size, level);
+            used[i] = false;
+            output.pop();
+        }
+    }
+
+    return {
+        getPermutations: function(input, size) {
+            // var input = input.split('');
+            var output = [];
+            var used = new Array(input.length);      
+            doPermute(input, output, used, size, 0);        
+            return results;    
+        }
+    }
+})();
+  var myResults = []; 
+  var letters = [1,2,3,4];
+  var abc = 0;
+  var size = letters.length;
+  // test results contains ARRAYS of combinations
+  var testResults = permutate.getPermutations(letters, size);
+    // for(i=0;i<testResults.length;i++){
+    //   console.log(testResults[i]);
+    // }
+    // console.log('myResults ',myResults);
+*/
+/*
+var permArr = [], usedChars = [];
+
+function permute(input) {
+  var i, ch;
+  for (i = 0; i < input.length; i++) {
+    ch = input.splice(i, 1)[0];
+    usedChars.push(ch);
+    if (input.length == 0) {
+      permArr.push(usedChars.slice());
+    }
+    permute(input);
+    input.splice(i, 0, ch);
+    usedChars.pop();
+  }
+  return permArr;
+};
+console.log(permute([5, 3, 7, 1]));
+*/
+/*
+var count=0;
+var myPermuts=[];
+    function permute(pre,cur){  
+        var len=cur.length;
+        for(var i=0;i<len;i++){
+            var p=clone(pre);
+            var c=clone(cur);
+            p.push(cur[i]);
+            remove(c,cur[i]);
+            if(len>1){
+                permute(p,c);
+            }else{
+                print(p);
+                myPermuts.push(p);
+                count++;
+            }
+        }
+    }
+    function print(arr){
+        console.log("printing");
+        var len=arr.length;
+        for(var i=0;i<len;i++){
+            process.stdout.write(arr[i]+" ");
+        }
+        console.log("\n");
+    }
+    function remove(arr,item){
+        if(contains(arr,item)){
+            var len=arr.length;
+            for(var i = len-1; i >= 0; i--){ // STEP 1
+                if(arr[i] == item){             // STEP 2
+                    arr.splice(i,1);              // STEP 3
+                }
+            }
+        }
+    }
+    function contains(arr,value){
+        for(var i=0;i<arr.length;i++){
+            if(arr[i]==value){
+                return true;
+            }
+        }
+        return false;
+    }
+    function clone(arr){
+        var a=new Array();
+        var len=arr.length;
+        for(var i=0;i<len;i++){
+            a.push(arr[i]);
+        }
+        return a;
+    }
+    permute([],[1,2,3]);
+    console.log(myPermuts);
+    */
+
+
+/*
+
+// function to geneerate combinations out of an array, like mCn
+function combinations(numArr, choose, callback) {
+    var n = numArr.length;
+    var c = [];
+    var inner = function(start, choose_) {
+        if (choose_ == 0) {
+            callback(c);
+        } else {
+            for (var i = start; i <= n - choose_; ++i) {
+                c.push(numArr[i]);
+                inner(i + 1, choose_ - 1);
+                c.pop();
+            }
+        }
+    }
+    inner(0, choose);
+}
+
+function printArray(array){
+  var n = array.length;
+  for(i=0; i<n;i++){
+    process.stdout.write(array[i]+' ');
+  }
+  process.stdout.write("\n");
+}
+var arrayTest = [1,2,3,4,5];
+console.log('printing orig array: ')
+printArray(arrayTest);
+console.log('printing combinations: ')
+combinations(arrayTest,arrayTest.length-1,printArray);
+*/
+
+
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+  
+//Storing the possible "types" of requests
+var typeOfRequests = [1,2];
+//
+var utilityDropPoint = [0,100];  
+//Storing the processing time taken by the server to process the types of requests (in milliseconds)
+//int processingTimeOfRequests[2] =  {10,10};
+var processingTimeOfRequests = 5;
+// final_queue_processing_order contains the REQUEST OBJECTS in the order ?required?
+var utility_results=[], final_queue_processing_order=[];
+
+
+
+
+
+
+/* Function to print permutations of string
+   This function takes three parameters:
+   1. String
+   2. Starting index of the string
+   3. Ending index of the string. */
+function permute(a,l,r){
+  // a is array,l is start index, r is ending index
+   var i;
+   if (l === r){
+      var temp_val_brute = fitness_value_fn(a.arrV,0);
+      if(temp_val_brute>brute_force_best_soln )
+        brute_force_best_soln = temp_val_brute;
+      // return a;
+   }
+   else
+   {
+       for (i = l; i <= r; i++)
+       {
+          // swap((a+l), (a+i));
+          o.x = a.arrV[l];
+          o.y = a.arrV[i];
+          swap(o);
+          a.arrV[l] = o.x;
+          a.arrV[i] = o.y;
+
+          permute(a, l+1, r);
+          
+          // swap((a+l), (a+i)); //backtrack
+          o.x = a.arrV[l];
+          o.y = a.arrV[i];
+          swap(o);
+          a.arrV[l] = o.x;
+          a.arrV[i] = o.y;
+
+       }
+   }
+}
+
+/*
+Fitness Function mathematical
+
+FOR REQ TYPE ONE:
+
+f(x) = -(9/5)*x    ; 0=<x=<50
+   = -90*x     ; x>50
+
+FOR REQ TYPE TWO:
+
+f(x) = 0        ; 0<=x<=60
+   = -(9/2)*x + 270 ; 60<x<=80
+   = -90*x      ; x>80
+
+
+Fitness Function mathematical ends here
+*/
+
+
+//Function to calculate fitness value
+function fitness_value_fn(queue, printflag){
+  //Define the initial variables
+  var j,time_spent = 0, fitness_val = 0;
+  for( j=0 ; j < queue.length ;  j++){ // was MAX_REQUESTS
+    //Request has been processed 
+    //Now lets calculate the utility(fitness/happiness value of the waiting user)
+    time_spent += processingTimeOfRequests;
+    // if request is of type 1
+    if( requestQueue[queue[j]].reqType === 1){
+      if(time_spent <= 50){
+        fitness_val += (-(90)/50)*time_spent;
+      }
+      else{
+        fitness_val += (-90);
+      }
+    }
+    //else if request is of type 2
+    else{
+      if( time_spent <= 60 ){
+        fitness_val += 0;
+
+      }
+      else if (( time_spent > 60 && time_spent<=80 )){
+        fitness_val += ((-9)/2)*time_spent + 270 ;
+      }
+      else{
+        fitness_val += (-90);
+      }
+    }
+    //printf("Completion time:%d milliseconds \n",time_spent);
+
+  }
+  if(printflag)
+    console.log("Fitness value for this individual : %d",fitness_val);
+  utility_results.push(fitness_val);
+  return fitness_val;
+}
+
+
+function recombination_cycle_crossover(parent1, parent2, crossover_child){
+  // int parent1[] = {0,1,2,3,4};
+  // int parent2[] = {2,3,1,0,4};
+  // int crossover_child[5]={-1,-1,-1,-1,-1};
+  console.log("Parent 1(for recombination):");
+  for (var i = 0; i < MAX_REQUESTS; ++i)
+  {
+    console.log("%d    ",parent1[i]);
+  }
+  console.log("Parent 2(for recombination):");
+  for (var i = 0; i < MAX_REQUESTS; ++i)
+  {
+    console.log("%d    ",parent2[i]);
+  }
+  // int sd;
+  // scanf("%d",&sd);
+  var placed_count =0 ,j=0;
+  //Execute the cycle crossover till all are handled
+  while(placed_count < MAX_REQUESTS)
+  {
+
+    var flag=0;
+    for(var i=0;i<MAX_REQUESTS;i++)
+      if(parent2[parent1[j]]===crossover_child[i])
+        flag=1;
+    if(flag===0){
+      crossover_child[j]=parent2[parent1[j]], placed_count++;
+      j = parent2[j];
+        
+    }
+    else{
+      //This means a cycle is completed
+      for(var i=0;i<MAX_REQUESTS;i++)
+        //Find a new cycle
+        if(crossover_child[i]===-1)
+          j = i;  
+    }
+    // printf("j is %d, pc %d\n",j,placed_count );
+  }
+
+    for(var i=0;i<5;i++)
+      console.log("%d    ",crossover_child[i] );
+}
+
+
+//Function to simulate swap mutation
+function mutate_swap(arr,arr_index){
+  var pos1 = generate_random_number(MAX_REQUESTS);
+  var pos2 = generate_random_number(MAX_REQUESTS);
+  var req_pos1 = arr[pos1];
+  var req_pos2 = arr[pos2];
+  var temp_index_swap = arr_index[pos1];
+  arr[pos2] =  req_pos1;
+  arr[pos1] = req_pos2;
+  arr_index[pos1] = arr_index[pos2];
+  arr_index[pos2] =  temp_index_swap;
+  arr[pos1] = req_pos2;
+  console.log("after swapping %d %d:", pos1, pos2);
+}
+
+// Function to simulate inverse mutation
+function mutate_inverse(arr, arr_index){
+  console.log("Applying inverse mutation");
+  var pos1 = generate_random_number(MAX_REQUESTS);
+  // var pos2 = generate_random_number(MAX_REQUESTS);
+  var vector=[];
+  var vector_index=[];
+  for(var i = 0; i < MAX_REQUESTS;i++)
+  {
+      vector_index.push(arr_index[i]);
+      vector.push(arr[i]);
+  }
+  // std::reverse(vector.begin(), vector.end());
+  vector.reverse();
+  // std::reverse(vector_index.begin()+pos1, vector_index.end()-pos1);
+  var anotherArr = vector_index.slice(pos1, vector_index.length-pos1).reverse();
+  Array.prototype.splice.apply(vector_index, [pos1, pos1+anotherArr.length].concat(anotherArr));
+  var x=0;
+  for (var i=0; i< vector.length; ++i){
+    arr[x++] = vector[i];
+  }
+  x=0;
+  for (var i=0; i< vector_index.length; ++i){
+    arr_index[x++] = vector_index[i];
+  }
+}
+
+//Function to simulate scramble mutation
+function mutate_scramble(arr, arr_index){
+  console.log("Applying scramble mutation: ");
+  for (var i = 0; i < MAX_REQUESTS; ++i)
+  {
+    //Pick two positions randomly
+    var pos1 = generate_random_number(MAX_REQUESTS);
+    var pos2 = generate_random_number(MAX_REQUESTS);
+    var req_pos1 = arr[pos1];
+    var req_pos2 = arr[pos2];
+    var temp_index_swap = arr_index[pos1];
+    arr[pos2] =  req_pos1;
+    arr[pos1] = req_pos2;
+    arr_index[pos1] = arr_index[pos2];
+    arr_index[pos2] =  temp_index_swap;
+    arr[pos1] = req_pos2;
+  }
+}

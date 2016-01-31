@@ -36,12 +36,12 @@ io.sockets.on('connection', function (socket) {
 console.log('The client server is up.');
 
 // todo use a function returning this object here, didnt work initially so long coded it
-client.emit('job request', { reqType: 1, req_id: 1, msg: 'for 1000', timeSt: JSON.stringify(new Date()) });
-client.emit('job request', { reqType: 2, req_id: 2, msg: 'for 90000', timeSt: JSON.stringify(new Date()) });
-client.emit('job request', { reqType: 2, req_id: 3, msg: 'for 90000', timeSt: JSON.stringify(new Date()) });
-client.emit('job request', { reqType: 1, req_id: 4, msg: 'for 1000', timeSt: JSON.stringify(new Date()) });
-client.emit('job request', { reqType: 1, req_id: 5, msg: 'for 1000', timeSt: JSON.stringify(new Date()) });
-client.emit('job request', { reqType: 2, req_id: 6, msg: 'for 90000', timeSt: JSON.stringify(new Date()) });
+client.emit('job request', { req_type: "t1", req_id: 1, msg: 'for 1000', timeSt: JSON.stringify(new Date()) });
+client.emit('job request', { req_type: "t2", req_id: 2, msg: 'for 90000', timeSt: JSON.stringify(new Date()) });
+client.emit('job request', { req_type: "t2", req_id: 3, msg: 'for 90000', timeSt: JSON.stringify(new Date()) });
+client.emit('job request', { req_type: "t1", req_id: 4, msg: 'for 1000', timeSt: JSON.stringify(new Date()) });
+client.emit('job request', { req_type: "t1", req_id: 5, msg: 'for 1000', timeSt: JSON.stringify(new Date()) });
+client.emit('job request', { req_type: "t2", req_id: 6, msg: 'for 90000', timeSt: JSON.stringify(new Date()) });
 
 
 client.emit('sending done');
