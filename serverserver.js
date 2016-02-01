@@ -1,4 +1,7 @@
+//REIVEW: Always write program desc and author and date(optional)
+
 /*
+ DEVELOPERS' NOTE:
  *** if you get infinite errors of "info  - unhandled socket.io url", do npm install socket.io@1.0
  */
  // fs was included for writing into file
@@ -9,25 +12,27 @@ var io = require('socket.io').listen(3013),
 var requestQueue = [],
     final_queue_processing_order = [],
     utility_results = [];
+
+//REVIEW: what does each of them store?, use self descriptive naming or comment about it!
 var o = {},
     obj = {},
     obj1 = {},
     obj2 = {};
+
 //Defining number of generations
 const NUMBER_OF_GENERATIONS = 4;
 //Define number of offsprings per generation
 const NUMBER_OF_OFFSPRINGS = 3;
-
 // Number of request profiles
 const NUM_REQ_TYPES = 2;
-
 // Request queue size
 const MAX_REQUESTS = 10;
-
+//
 const TERMINATION_CONDITION_COUNT = 20;
+//
 const MINUS_INFINITY = -99999;
 
-// Variables for random number generater
+// Variables used for random number generater
 const ERR_NO_NUM = -1
 const ERR_NO_MEM = -2
 
@@ -39,6 +44,7 @@ var queue__init_permutation;
 //   "t2":5
 // };
 
+//REVIEW: we are fixing it to be 5 seconds currently, MUST CHANGE IT LATER, different for each type of requests
 var processingTimeOfRequests = 5;
 
 function recombination_cycle_crossover(requestQueueObj, other_offspring_arrObj, recombination_offspringObj) { // int *parent1, int *parent2,int *crossover_child:::: arr_index,other_offspring_arr,recombination_offspring
@@ -90,6 +96,8 @@ function recombination_cycle_crossover(requestQueueObj, other_offspring_arrObj, 
     // for (i = 0; i < recombination_offspringObj.item.length; i++)
     //     console.log("%d\t", recombination_offspringObj.item[i]);
     }
+
+
 //Function to simulate swap mutation
 function mutate_swap(requestQueueObj) {
     console.log("Applying swap mutation\n");
@@ -109,8 +117,13 @@ function mutate_swap(requestQueueObj) {
     console.log("after swapping index %d %d:\n", pos1, pos2);
 }
 
+//REVIEW: Give a sample request queue obj here in comments
+
 // Function to simulate inverse mutation
 function mutate_inverse(requestQueueObj) {
+
+    //REVIEW: approach: generate two random numbers and reverse the "sub-array" bw the two positions, i don't think you are doing that
+
     console.log("Applying inverse mutation\n");
     var n = requestQueueObj.item.length;
     var pos1 = generate_random_number(n);
@@ -140,6 +153,9 @@ function mutate_inverse(requestQueueObj) {
 function mutate_scramble(requestQueueObj) { // int *arr->, int *arr_index->id
     console.log("Applying scramble mutation:\n");
     var n = requestQueueObj.item.length;
+    //REVIEW: your approach takes O(n) while it should be done in O(1)
+    //REVIEW: you are doing this random swapping n times , it should be : select 2 positions randomly, and shuffle the subarray bw those two positions
+    //REVIEW: Shuffle function-> http://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
     for (i = 0; i < n; ++i) {
         //Pick two positions randomly
         var pos1 = generate_random_number(n);
@@ -351,6 +367,7 @@ io.sockets.on('connection', function(socket) {
 
             //Printing the parent after the swap mutation
             for (i = 0; i < arr.length; ++i) {
+                //REVIEW: i think there should be one more %d
                 console.log("%d ", arr[i].req_id, '   ', arr[i].req_type);
 
             }
@@ -368,8 +385,11 @@ io.sockets.on('connection', function(socket) {
             obj.item = arr;
             mutate_scramble(obj);
             arr = obj.item;
+            //REVIEW: i think the comment below should be "scramble"
             //Printing the mutant after the swap mutation
             for (i = 0; i < arr.length; ++i) {
+
+                //REVIEW: i think there should be one more %d
                 console.log("%d  ", arr[i].req_id, "  ", arr[i].req_type);
             }
             console.log("\n");
@@ -386,7 +406,8 @@ io.sockets.on('connection', function(socket) {
             mutate_inverse(obj);
             arr = obj.item;
 
-            //Printing the mutant after the swap mutation
+            //REVIEW: i think the comment below should be "inverse"
+            //Printing the mutant after the "swap" mutation
             for (i = 0; i < arr.length; ++i) {
                 console.log("%d ", arr[i].req_id, "  ", arr[i].req_type);
             }
