@@ -14,7 +14,9 @@ var requestQueue = [],
     utility_results = [];
 
 //REVIEW: what does each of them store?, use self descriptive naming or comment about it!
-var o = {},
+//REVIEW_RESPONSE: declare some global OBJECTS to be passed to functions so that variables are modified (in js they are passed by copy, objects are not) 
+// eg. as in swap, and permute functions
+var o = {x:0,y:0},
     obj = {},
     obj1 = {},
     obj2 = {};
@@ -39,13 +41,15 @@ const ERR_NO_MEM = -2
 var brute_force_best_soln = MINUS_INFINITY;
 var queue__init_permutation;
 /* ******kay constants and functions for ec approach. Definition starts here****** */
+
+
+//REVIEW: we are fixing it to be 5 seconds currently, MUST CHANGE IT LATER, different for each type of requests
+//REVIEW_RESPONSE: commented sample codebelow
+var processingTimeOfRequests = 5;
 // var processingTimeOfRequests = {
 //   "t1":10,
 //   "t2":5
 // };
-
-//REVIEW: we are fixing it to be 5 seconds currently, MUST CHANGE IT LATER, different for each type of requests
-var processingTimeOfRequests = 5;
 
 function recombination_cycle_crossover(requestQueueObj, other_offspring_arrObj, recombination_offspringObj) { // int *parent1, int *parent2,int *crossover_child:::: arr_index,other_offspring_arr,recombination_offspring
     // int parent1[] = {0,1,2,3,4};
@@ -91,7 +95,7 @@ function recombination_cycle_crossover(requestQueueObj, other_offspring_arrObj, 
     */
 
     console.log('printing recombination offspring');
-        console.log(recombination_offspringObj.item);
+    console.log(recombination_offspringObj.item);
     
     // for (i = 0; i < recombination_offspringObj.item.length; i++)
     //     console.log("%d\t", recombination_offspringObj.item[i]);
@@ -118,48 +122,119 @@ function mutate_swap(requestQueueObj) {
 }
 
 //REVIEW: Give a sample request queue obj here in comments
+//REVIEW_RESPONSE: sample request object format (for reference)
+// { 
+//     req_type: "t1",  // request type: string
+//     req_id: 1,       // request id: unique, integer currently
+//     msg: 'for 1000', // optional message atttached with request, string
+//     timeSt: JSON.stringify(new Date()) // timeStamp at which request was sent from client end (take off timestamp): string
+// }
 
 // Function to simulate inverse mutation
+
+// backup
+// function mutate_inverse(requestQueueObj) {
+
+//     console.log("Applying inverse mutation\n");
+//     var n = requestQueueObj.item.length;
+//     var pos1 = generate_random_number(n);
+//     // var pos2 = generate_random_number(n);
+//     // std::vector<int> vector;
+//     // std::vector<int> vector_index;
+//     // for(int i = 0; i < n;i++)
+//     // {
+//     //     vector_index.push_back(arr_index[i]);
+//     //     vector.push_back(arr[i]);
+//     // }
+//     // std::reverse(vector.begin(), vector.end());
+//     // std::reverse(vector_index.begin()+pos1, vector_index.end()-pos1);
+//     // int x=0;
+//     // for (std::vector<int>::iterator itv=vector.begin(); itv != vector.end(); ++itv){
+//     //   arr[x++] = *itv;
+//     // }
+//     // x=0;
+//     // for (std::vector<int>::iterator itvv=vector_index.begin(); itvv != vector_index.end(); ++itvv){
+//     //   arr_index[x++] = *itvv;
+//     // }
+//     requestQueueObj.item.reverse();
+// }
+
 function mutate_inverse(requestQueueObj) {
 
     //REVIEW: approach: generate two random numbers and reverse the "sub-array" bw the two positions, i don't think you are doing that
+    //REVIEW_RESPONSE: did so, hadnt understood the purpose the last time
 
-    console.log("Applying inverse mutation\n");
     var n = requestQueueObj.item.length;
     var pos1 = generate_random_number(n);
-    // var pos2 = generate_random_number(n);
-    // std::vector<int> vector;
-    // std::vector<int> vector_index;
-    // for(int i = 0; i < n;i++)
-    // {
-    //     vector_index.push_back(arr_index[i]);
-    //     vector.push_back(arr[i]);
-    // }
-    // std::reverse(vector.begin(), vector.end());
-    // std::reverse(vector_index.begin()+pos1, vector_index.end()-pos1);
-    // int x=0;
-    // for (std::vector<int>::iterator itv=vector.begin(); itv != vector.end(); ++itv){
-    //   arr[x++] = *itv;
-    // }
-    // x=0;
-    // for (std::vector<int>::iterator itvv=vector_index.begin(); itvv != vector_index.end(); ++itvv){
-    //   arr_index[x++] = *itvv;
-    // }
-    requestQueueObj.item.reverse();
+    var pos2 = generate_random_number(n);
+    while (pos2 === pos1) { // to ensure unique num generation
+        pos2 = generate_random_number(n);
+    }
+    console.log("Applying inverse mutation bw %d %d index\n",pos1,pos2);
+    for (var l = pos1, r = pos2; l < r; l += 1, r -= 1)
+        {
+            var temporary = requestQueueObj.item[l];
+            requestQueueObj.item[l] = requestQueueObj.item[r];
+            requestQueueObj.item[r] = temporary;
+        }
+    // requestQueueObj.item.reverse();
 }
 
 
+// //Function to simulate scramble mutation
+// abckup
+// function mutate_scramble(requestQueueObj) { // int *arr->, int *arr_index->id
+//     console.log("Applying scramble mutation:\n");
+//     var n = requestQueueObj.item.length;
+//     for (i = 0; i < n; ++i) {
+//         //Pick two positions randomly
+//         var pos1 = generate_random_number(n);
+//         var pos2 = generate_random_number(n);
+//         // var req_pos1 = arr[pos1];
+//         // var req_pos2 = arr[pos2];
+//         // var temp_index_swap = arr_index[pos1]; //
+//         // arr[pos2] =  req_pos1;
+//         // arr[pos1] = req_pos2;
+//         // arr_index[pos1] = arr_index[pos2]; //
+//         // arr_index[pos2] =  temp_index_swap; //
+//         // arr[pos1] = req_pos2;
+
+//         o.x = requestQueueObj.item[pos1];
+//         o.y = requestQueueObj.item[pos2];
+//         swap(o);
+//         requestQueueObj.item[pos1] = o.x;
+//         requestQueueObj.item[pos2] = o.y;
+
+//     }
+// }
+
+// randomise shuffle an array Object from index l to r inclusive
+function shuffleArray(array, l, r) {
+    for (var i = r; i >=l ; i--) {
+        var j = Math.floor(Math.random() * (r-l+1)) + l;
+        var temp = array.item[i];
+        array.item[i] = array.item[j];
+        array.item[j] = temp;
+    }
+    // console.log(array);
+    // return array;
+}
+
 //Function to simulate scramble mutation
 function mutate_scramble(requestQueueObj) { // int *arr->, int *arr_index->id
-    console.log("Applying scramble mutation:\n");
     var n = requestQueueObj.item.length;
     //REVIEW: your approach takes O(n) while it should be done in O(1)
     //REVIEW: you are doing this random swapping n times , it should be : select 2 positions randomly, and shuffle the subarray bw those two positions
     //REVIEW: Shuffle function-> http://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
-    for (i = 0; i < n; ++i) {
+    //REVIEW_RESPONSE: resolved
+    // for (i = 0; i < n; ++i) {
         //Pick two positions randomly
         var pos1 = generate_random_number(n);
         var pos2 = generate_random_number(n);
+        while (pos2 === pos1) { // to ensure unique num generation
+            pos2 = generate_random_number(n);
+        }
+    console.log("Applying scramble mutation bw %d %d index\n",pos1,pos2);
         // var req_pos1 = arr[pos1];
         // var req_pos2 = arr[pos2];
         // var temp_index_swap = arr_index[pos1]; //
@@ -169,13 +244,14 @@ function mutate_scramble(requestQueueObj) { // int *arr->, int *arr_index->id
         // arr_index[pos2] =  temp_index_swap; //
         // arr[pos1] = req_pos2;
 
-        o.x = requestQueueObj.item[pos1];
-        o.y = requestQueueObj.item[pos2];
-        swap(o);
-        requestQueueObj.item[pos1] = o.x;
-        requestQueueObj.item[pos2] = o.y;
+        // o.x = requestQueueObj.item[pos1];
+        // o.y = requestQueueObj.item[pos2];
+        // swap(o);
+        // requestQueueObj.item[pos1] = o.x;
+        // requestQueueObj.item[pos2] = o.y;
+        shuffleArray(requestQueueObj, pos1, pos2);
 
-    }
+    // }
 }
 
 /*
@@ -260,10 +336,7 @@ function generate_random_number(size) {
   b = o.y
 
 */
-var o = {
-    x: 0,
-    y: 0
-};
+
 
 function swap(obj) {
     var tmp = obj.x;
@@ -323,10 +396,9 @@ io.sockets.on('connection', function(socket) {
         //Brute force starts here
         var bruteForceStart = process.hrtime();
         console.log('*****BRUTE FORCE START*****');
-        //2-D ARRAY THAT STORES ALL POSSIBLE PERMUATIONS OF REQUESTS QUEUE
+        //2-D ARRAY THAT STORES ALL POSSIBLE PERMUATIONS OF REQUESTS QUEUE OBJECTS
         queue__init_permutation = permute(arr);
         //queue__init_permutation.reverse();
-        console.log('no of permutations see type ',queue__init_permutation);
         for (var i = 0; i < queue__init_permutation.length; i++) {
             var temp_val_brute = fitness_value_fn(queue__init_permutation[i], 0);
             // console.log('temp_val_brute ',temp_val_brute);
@@ -368,6 +440,7 @@ io.sockets.on('connection', function(socket) {
             //Printing the parent after the swap mutation
             for (i = 0; i < arr.length; ++i) {
                 //REVIEW: i think there should be one more %d
+                //REVIEW_RESPONSE: request type is string, so nope.
                 console.log("%d ", arr[i].req_id, '   ', arr[i].req_type);
 
             }
@@ -386,10 +459,12 @@ io.sockets.on('connection', function(socket) {
             mutate_scramble(obj);
             arr = obj.item;
             //REVIEW: i think the comment below should be "scramble"
-            //Printing the mutant after the swap mutation
+            //REVIEW_RESPONSE: resolved
+            //Printing the mutant after the scramble mutation
             for (i = 0; i < arr.length; ++i) {
 
                 //REVIEW: i think there should be one more %d
+                //REVIEW_REPLY: i kept req_type attribute of a request object is STRING
                 console.log("%d  ", arr[i].req_id, "  ", arr[i].req_type);
             }
             console.log("\n");
@@ -407,7 +482,8 @@ io.sockets.on('connection', function(socket) {
             arr = obj.item;
 
             //REVIEW: i think the comment below should be "inverse"
-            //Printing the mutant after the "swap" mutation
+            //REVIEW_REPLY: resolved
+            //Printing the mutant after the inverse mutation
             for (i = 0; i < arr.length; ++i) {
                 console.log("%d ", arr[i].req_id, "  ", arr[i].req_type);
             }
