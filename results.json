@@ -1,0 +1,6 @@
+{
+	"brute-force":[{"requests":5,"time":1},{"requests":55,"time":11},{"requests":555,"time":111}],
+	"fcfs":[{"requests":5,"time":3},{"requests":55,"time":13},{"requests":555,"time":113}],
+	"ec":[{"requests":5,"time":5},{"requests":55,"time":15},{"requests":555,"time":115}],
+	"sjf":[{"requests":5,"time":7},{"requests":55,"time":17},{"requests":555,"time":117}]
+}
