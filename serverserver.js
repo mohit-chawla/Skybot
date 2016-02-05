@@ -23,7 +23,8 @@ var requestQueue = [],
 var o = {x:0,y:0},
     obj = {},
     obj1 = {},
-    obj2 = {};
+    obj2 = {},
+    obj3 = {};
 
 //Defining number of generations
 const NUMBER_OF_GENERATIONS = 4;
@@ -55,6 +56,7 @@ var processingTimeOfRequests = 5;
 //   "t2":5
 // };
 
+/*
 function recombination_cycle_crossover(requestQueueObj, other_offspring_arrObj, recombination_offspringObj) { // int *parent1, int *parent2,int *crossover_child:::: arr_index,other_offspring_arr,recombination_offspring
     // int parent1[] = {0,1,2,3,4};
     // int parent2[] = {2,3,1,0,4};
@@ -74,35 +76,56 @@ function recombination_cycle_crossover(requestQueueObj, other_offspring_arrObj, 
     //Execute the cycle crossover till all are handled
 
     // This code not working, goes into infinite loop
-    /*
-    while (placed_count < MAX_REQUESTS) {
-        console.log('haha');
-        var flag = 0;
-        for (i = 0; i < MAX_REQUESTS; i++) {
-            if (other_offspring_arrObj.item[requestQueueObj.item[j]] === recombination_offspringObj.item[i])
-                flag = 1;
-        }
-        if (flag == 0) {
-            recombination_offspringObj.item[j] = other_offspring_arrObj.item[requestQueueObj.item[j].req_id];
-            placed_count++;
-            j = other_offspring_arrObj.item[j];
-        } else {
-            //This means a cycle is completed
-            for (i = 0; i < MAX_REQUESTS; i++) {
-                //Find a new cycle
-                if (recombination_offspringObj.item[i] === -1)
-                    j = i;
-            }
-        }
-        // printf("j is %d, pc %d\n",j,placed_count );
-    }
-    */
+    
+    // while (placed_count < MAX_REQUESTS) {
+    //     console.log('haha');
+    //     var flag = 0;
+    //     for (i = 0; i < MAX_REQUESTS; i++) {
+    //         if (other_offspring_arrObj.item[requestQueueObj.item[j]] === recombination_offspringObj.item[i])
+    //             flag = 1;
+    //     }
+    //     if (flag == 0) {
+    //         recombination_offspringObj.item[j] = other_offspring_arrObj.item[requestQueueObj.item[j].req_id];
+    //         placed_count++;
+    //         j = other_offspring_arrObj.item[j];
+    //     } else {
+    //         //This means a cycle is completed
+    //         for (i = 0; i < MAX_REQUESTS; i++) {
+    //             //Find a new cycle
+    //             if (recombination_offspringObj.item[i] === -1)
+    //                 j = i;
+    //         }
+    //     }
+    //     // printf("j is %d, pc %d\n",j,placed_count );
+    // }
+    
 
     console.log('printing recombination offspring');
     console.log(recombination_offspringObj.item);
     
     // for (i = 0; i < recombination_offspringObj.item.length; i++)
     //     console.log("%d\t", recombination_offspringObj.item[i]);
+    }
+*/
+
+function recombination_cycle_crossover(parent1Obj, parent2Obj, recombination_offspringObj) { // int *parent1, int *parent2,int *crossover_child:::: arr_index,other_offspring_arr,recombination_offspring
+    console.log(parent1Obj.item);
+    // console.log(parent2Obj.item);
+    var cycles = [], placed_count=0, k = parent1Obj.item.length;
+    var buff = {p1:[], p2:[]};
+    console.log(cycles);
+
+
+    // for(i=0;i<requestQueueObj.item.length;i++){
+    //     if(i%2===0){
+    //         buff.p1.push(requestQueueObj.item[i]);
+    //     }
+    //     else{
+    //         buff.p2.push(requestQueueObj.item[i]);
+    //     }
+    // }
+    
+    console.log(buff);
     }
 
 
@@ -533,7 +556,13 @@ io.sockets.on('connection', function(socket) {
             } while (other_offspring == best_offspring);
 
             console.log("First parent selected %d ,second parent selected = %d\n", best_offspring, other_offspring);
-            
+            console.log("recombi stuff below:");
+
+            obj1.item= requestQueue;
+            obj2.item= requestQueue;
+            obj3.item = {};
+            // obj1: parent 1, obj2 :parent 2, obj3: possible request sequences of offspring
+            recombination_cycle_crossover(obj1,obj2, obj3);
             // mohit recombination issue see starts
             
             /*
@@ -567,6 +596,8 @@ io.sockets.on('connection', function(socket) {
             // mohit recombination issue see ends
 
             //Print the fitness values for this generation
+
+
             console.log("List of fitness values for this generation: \n");
             console.log("utility results: ", utility_results);
 
