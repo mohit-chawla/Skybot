@@ -13,9 +13,9 @@ var io = require('socket.io').listen(3013),
     fs = require('fs');
 
 
-var requestQueue = [],
+var requestQueue = [], requestQueueReferenceOrder=[],
     final_queue_processing_order = [],
-    utility_results = [];
+    utility_results = [], offsprings = [];
 
 //REVIEW: what does each of them store?, use self descriptive naming or comment about it!
 //REVIEW_RESPONSE: declare some global OBJECTS to be passed to functions so that variables are modified (in js they are passed by copy, objects are not) 
@@ -128,6 +128,21 @@ function recombination_cycle_crossover(parent1Obj, parent2Obj, recombination_off
     console.log(buff);
     }
 
+    function request_array_from_order(reference_order_array, original_request_queue){
+        var n = reference_order_array.length;
+        var m = original_request_queue.length;
+        var tempRequestArray = new Array(n);
+
+        for(var i=0;i<n;i++){
+            for(var j=0;j<m;j++){
+                if(original_request_queue[j].req_id === reference_order_array[i]){
+                    tempRequestArray[i] = original_request_queue[j];
+                    break;
+                }
+            }
+        }
+        return tempRequestArray;
+    }
 
 //Function to simulate swap mutation
 function mutate_swap(requestQueueObj) {
@@ -197,8 +212,17 @@ function mutate_inverse(requestQueueObj) {
     while (pos2 === pos1) { // to ensure unique num generation
         pos2 = generate_random_number(n);
     }
+    var l, r;
+    if(pos1>pos2){
+        l = pos2;
+        r = pos1;
+    }
+    else{
+        l = pos1;
+        r = pos2;
+    }
     console.log("Applying inverse mutation bw %d %d index\n",pos1,pos2);
-    for (var l = pos1, r = pos2; l < r; l += 1, r -= 1)
+    for (; l < r; l += 1, r -= 1)
         {
             var temporary = requestQueueObj.item[l];
             requestQueueObj.item[l] = requestQueueObj.item[r];
@@ -206,34 +230,6 @@ function mutate_inverse(requestQueueObj) {
         }
     // requestQueueObj.item.reverse();
 }
-
-
-// //Function to simulate scramble mutation
-// abckup
-// function mutate_scramble(requestQueueObj) { // int *arr->, int *arr_index->id
-//     console.log("Applying scramble mutation:\n");
-//     var n = requestQueueObj.item.length;
-//     for (i = 0; i < n; ++i) {
-//         //Pick two positions randomly
-//         var pos1 = generate_random_number(n);
-//         var pos2 = generate_random_number(n);
-//         // var req_pos1 = arr[pos1];
-//         // var req_pos2 = arr[pos2];
-//         // var temp_index_swap = arr_index[pos1]; //
-//         // arr[pos2] =  req_pos1;
-//         // arr[pos1] = req_pos2;
-//         // arr_index[pos1] = arr_index[pos2]; //
-//         // arr_index[pos2] =  temp_index_swap; //
-//         // arr[pos1] = req_pos2;
-
-//         o.x = requestQueueObj.item[pos1];
-//         o.y = requestQueueObj.item[pos2];
-//         swap(o);
-//         requestQueueObj.item[pos1] = o.x;
-//         requestQueueObj.item[pos2] = o.y;
-
-//     }
-// }
 
 // randomise shuffle an array Object from index l to r inclusive
 function shuffleArray(array, l, r) {
@@ -246,6 +242,9 @@ function shuffleArray(array, l, r) {
     // console.log(array);
     // return array;
 }
+// var kay = [0,1,2,3,4,5,6];
+// shuffleArray({item: kay},2,4);
+// console.log("kay: ",kay);
 
 //Function to simulate scramble mutation
 function mutate_scramble(requestQueueObj) { // int *arr->, int *arr_index->id
@@ -262,21 +261,11 @@ function mutate_scramble(requestQueueObj) { // int *arr->, int *arr_index->id
             pos2 = generate_random_number(n);
         }
     console.log("Applying scramble mutation bw %d %d index\n",pos1,pos2);
-        // var req_pos1 = arr[pos1];
-        // var req_pos2 = arr[pos2];
-        // var temp_index_swap = arr_index[pos1]; //
-        // arr[pos2] =  req_pos1;
-        // arr[pos1] = req_pos2;
-        // arr_index[pos1] = arr_index[pos2]; //
-        // arr_index[pos2] =  temp_index_swap; //
-        // arr[pos1] = req_pos2;
-
-        // o.x = requestQueueObj.item[pos1];
-        // o.y = requestQueueObj.item[pos2];
-        // swap(o);
-        // requestQueueObj.item[pos1] = o.x;
-        // requestQueueObj.item[pos2] = o.y;
-        shuffleArray(requestQueueObj, pos1, pos2);
+        if(pos1<pos2){
+            shuffleArray(requestQueueObj, pos1, pos2);
+        }else{
+            shuffleArray(requestQueueObj, pos2, pos1);
+        }
 
     // }
 }
@@ -405,6 +394,10 @@ io.sockets.on('connection', function(socket) {
     // after all requests have been evaluated and queed, generate the results
     socket.on('sending done', function() {
         console.log('All queued');
+        
+        for (var i = 0; i < requestQueue.length; i++) {
+            requestQueueReferenceOrder.push(requestQueue[i].req_id);
+        }
 
         console.log('*****INITIAL POPULATION START*****');
         for (var i = 0; i < requestQueue.length; i++) {
@@ -416,8 +409,8 @@ io.sockets.on('connection', function(socket) {
 
         //Define array to be used in the generations
         var arr = [];
-        for (i = 0; i < requestQueue.length; i++) {
-            arr.push(requestQueue[i]);
+        for (i = 0; i < requestQueueReferenceOrder.length; i++) {
+            arr.push(requestQueueReferenceOrder[i]);
         }
 
         //Brute force starts here
@@ -425,10 +418,11 @@ io.sockets.on('connection', function(socket) {
         console.log('*****BRUTE FORCE START*****');
         //2-D ARRAY THAT STORES ALL POSSIBLE PERMUATIONS OF REQUESTS QUEUE OBJECTS
         queue__init_permutation = permute(arr);
-        //queue__init_permutation.reverse();
+
         for (var i = 0; i < queue__init_permutation.length; i++) {
-            var temp_val_brute = fitness_value_fn(queue__init_permutation[i], 0);
-            // console.log('temp_val_brute ',temp_val_brute);
+            var tempRequestArray = request_array_from_order(queue__init_permutation[i], requestQueue);
+            // console.log("temp req arr: ",tempRequestArray)
+            var temp_val_brute = fitness_value_fn(tempRequestArray, 0);
             if (temp_val_brute > brute_force_best_soln)
                 brute_force_best_soln = temp_val_brute;
         }
@@ -443,185 +437,233 @@ io.sockets.on('connection', function(socket) {
 
         var maximum_utility = MINUS_INFINITY;
         //Clear the initial values in the utility
-        utility_results = [];
+        while(utility_results.length){
+            utility_results.pop();
+        }
         var termination_count = 0,
             termination_comparator = maximum_utility; // termination_comparator never used
         // console.log(arr);
-
+        
         for (var gen = 0; gen < NUMBER_OF_GENERATIONS; ++gen) {
             var flag = 0; //For useless generation criteria
             var temp_mutation_iterator = 0;
+
             console.log("\n------------------------- GENERATION NUMBER %d------------------------ \n", gen);
+            while(offsprings.length){
+                offsprings.pop();
+            }
+            
+            console.log("arr: ",arr);
+            console.log("offsprings: ",offsprings);
             //To save the population of this generation
-            var offsprings = new Array(NUMBER_OF_OFFSPRINGS);
-            for (i = 0; i < offsprings.length; i++)
-                offsprings[i] = new Array(arr.length);
+            // var offsprings = new Array(NUMBER_OF_OFFSPRINGS);
+            
+            // for (i = 0; i < offsprings.length; i++)
+            //     offsprings[i] = new Array(arr.length);
             // int offsprings[NUMBER_OF_OFFSPRINGS][MAX_REQUESTS];
 
-            //Swap mutation for this generation
-            obj = {};
-            obj.item = arr;
-            mutate_swap(obj);
-            arr = obj.item;
+            function generate_offsprings_swap(callback){
+                //Swap mutation for this generation
+                obj = {};
+                obj.item = arr;
+                mutate_swap(obj);
+                arr = obj.item;
 
-            //Printing the parent after the swap mutation
-            for (i = 0; i < arr.length; ++i) {
-                //REVIEW: i think there should be one more %d
-                //REVIEW_RESPONSE: request type is string, so nope.
-                console.log("%d ", arr[i].req_id, '   ', arr[i].req_type);
+                //Printing the parent after the swap mutation
+                for (i = 0; i < arr.length; ++i) {
+                    //REVIEW: i think there should be one more %d
+                    //REVIEW_RESPONSE: request type is string, so nope.
+                    console.log("%d ", arr[i]);
 
-            }
-            console.log("\n");
-            //Saving the new mutated offspring
-            // console.log('logging reqQueue: ',requestQueue);
+                }
+                console.log("----------------\n");
+                //Saving the new mutated offspring
+                // console.log('logging reqQueue: ',requestQueue);
 
-            for (var col_iterator = 0; col_iterator < offsprings[0].length; col_iterator++) {
-                // offsprings[temp_mutation_iterator][col_iterator] = arr_index[col_iterator];
-                offsprings[temp_mutation_iterator][col_iterator] = arr[col_iterator].req_id;
-            }
-            temp_mutation_iterator++;
-            //Scramble mutation for this generation
-            obj = {};
-            obj.item = arr;
-            mutate_scramble(obj);
-            arr = obj.item;
-            //REVIEW: i think the comment below should be "scramble"
-            //REVIEW_RESPONSE: resolved
-            //Printing the mutant after the scramble mutation
-            for (i = 0; i < arr.length; ++i) {
+                // for (var col_iterator = 0; col_iterator < arr.length; col_iterator++) {
+                    // offsprings[temp_mutation_iterator][col_iterator] = arr_index[col_iterator];
+                    // offsprings[temp_mutation_iterator][col_iterator] = arr[col_iterator];
+                    
+                    console.log("before: ",offsprings);
+                    offsprings.push(arr); // didnt work
+                    // offsprings[temp_mutation_iterator] = arr;
+                    console.log("after: ",offsprings);
+                    
+                // }
+                temp_mutation_iterator++;
+                if(typeof callback == 'function')
+                            callback(generate_offsprings_inverse);
+            };
+            
+            function generate_offsprings_scramble(callback){
+                //Scramble mutation for this generation
+                obj = {};
+                obj.item = arr;
+                mutate_scramble(obj);
+                arr = obj.item;
+                //REVIEW: i think the comment below should be "scramble"
+                //REVIEW_RESPONSE: resolved
+                //Printing the mutant after the scramble mutation
+                for (i = 0; i < arr.length; ++i) {
 
-                //REVIEW: i think there should be one more %d
-                //REVIEW_REPLY: i kept req_type attribute of a request object is STRING
-                console.log("%d  ", arr[i].req_id, "  ", arr[i].req_type);
-            }
-            console.log("\n");
-            //Saving the new mutated offspring
-            for (var col_iterator = 0; col_iterator < offsprings[0].length; col_iterator++) {
-                // offsprings[temp_mutation_iterator][col_iterator] = arr_index[col_iterator];
-                offsprings[temp_mutation_iterator][col_iterator] = arr[col_iterator].req_id;
-            }
-            temp_mutation_iterator++;
+                    //REVIEW: i think there should be one more %d
+                    //REVIEW_REPLY: i kept req_type attribute of a request object is STRING
+                    console.log("%d  ", arr[i]);
+                }
+                console.log("\n");
+                //Saving the new mutated offspring
+                // for (var col_iterator = 0; col_iterator < offsprings[0].length; col_iterator++) {
+                //     // offsprings[temp_mutation_iterator][col_iterator] = arr_index[col_iterator];
+                //     offsprings[temp_mutation_iterator][col_iterator] = arr[col_iterator].req_id;
+                    console.log("before: ",offsprings);
+                    offsprings.push(arr); // didnt work
+                    // offsprings[temp_mutation_iterator] = arr;
+                    console.log("after: ",offsprings);
+                    
+                // }
+                temp_mutation_iterator++;
+                if(typeof callback == 'function')
+                            callback();
+            };
 
-            //Swap mutation for this generation
-            obj = {};
-            obj.item = arr;
-            mutate_inverse(obj);
-            arr = obj.item;
+            function generate_offsprings_inverse(){
+                //inverse mutation for this generation
+                obj = {};
+                obj.item = arr;
+                mutate_inverse(obj);
+                arr = obj.item;
 
-            //REVIEW: i think the comment below should be "inverse"
-            //REVIEW_REPLY: resolved
-            //Printing the mutant after the inverse mutation
-            for (i = 0; i < arr.length; ++i) {
-                console.log("%d ", arr[i].req_id, "  ", arr[i].req_type);
-            }
-            console.log("\n");
+                //REVIEW: i think the comment below should be "inverse"
+                //REVIEW_REPLY: resolved
+                //Printing the mutant after the inverse mutation
+                for (i = 0; i < arr.length; ++i) {
+                    console.log("%d ", arr[i]);
+                }
+                console.log("\n");
 
 
-            //Saving the new mutated offspring
-            for (col_iterator = 0; col_iterator < offsprings[0].length; col_iterator++)
-                offsprings[temp_mutation_iterator][col_iterator] = arr[col_iterator].req_id;
-            temp_mutation_iterator++;
+                //Saving the new mutated offspring
+                // for (col_iterator = 0; col_iterator < offsprings[0].length; col_iterator++)
+                //     offsprings[temp_mutation_iterator][col_iterator] = arr[col_iterator].req_id;
+                    
+                    console.log("before: ",offsprings);
+                    offsprings.push(arr); // didnt work
+                    // offsprings[temp_mutation_iterator] = arr;
+                    console.log("after: ",offsprings);
+                    
+                temp_mutation_iterator++;
+                
+            };
 
+            generate_offsprings_swap(generate_offsprings_scramble); // each function works fine as a unit
+
+            console.log("offsprings");
+            console.log(offsprings);
+            
             var best_offspring, other_offspring;
             //SURVIVOR SELECTION
-            for (var k = 0; k < NUMBER_OF_OFFSPRINGS; k++) {
+            for (var k = 0; k < offsprings.length; k++) {
 
                 //Selecting the best out of mutants
                 //Set initial utlity as the utility of parent
-                var this_offspring_arr_temp = new Array(offsprings[0].length);
-                for (i = 0; i < offsprings[0].length; ++i) {
-                    this_offspring_arr_temp[i] = offsprings[k][i];
-                }
+                // var this_offspring_arr_temp = new Array(offsprings[0].length);
+                
+                // for (i = 0; i < offsprings[0].length; ++i) {
+                    // this_offspring_arr_temp[i] = offsprings[k][i];
+                // }
                 ///////////////////////////////////////////////////////////////////////////////////////////////////////////works fine till here
-
-                var this_generation_utility = fitness_value_fn(this_offspring_arr_temp, 1);
-                // console.log('this gen ',this_generation_utility,' max ',maximum_utility);
+                
+                var this_generation_utility = fitness_value_fn(offsprings[k], 1);
+                console.log('this gen ',this_generation_utility,' max ',maximum_utility);
 
                 if (this_generation_utility > maximum_utility) {
                     flag = 1;
                     best_offspring = k;
                     maximum_utility = this_generation_utility;
-                    final_queue_processing_order = [];
-                    for (i = 0; i < offsprings[0].length; ++i) {
-                        final_queue_processing_order.push(offsprings[k][i]);
+                    // final_queue_processing_order = [];
+                    while(final_queue_processing_order.length){
+                        final_queue_processing_order.pop();
                     }
+                    // for (i = 0; i < offsprings[0].length; ++i) {
+                        final_queue_processing_order.push(offsprings[k]);
+                    // }
                 }
 
             }
-            //Select the second survivor(parent)
-            other_offspring = best_offspring;
-            do {
-                other_offspring = generate_random_number(NUMBER_OF_OFFSPRINGS - 1);
+            // //Select the second survivor(parent)
+            // other_offspring = best_offspring;
+            // do {
+            //     other_offspring = generate_random_number(NUMBER_OF_OFFSPRINGS - 1);
 
-            } while (other_offspring == best_offspring);
+            // } while (other_offspring == best_offspring);
 
-            console.log("First parent selected %d ,second parent selected = %d\n", best_offspring, other_offspring);
-            console.log("recombi stuff below:");
+            // console.log("First parent selected %d ,second parent selected = %d\n", best_offspring, other_offspring);
+            // console.log("recombi stuff below:");
 
-            obj1.item= requestQueue;
-            obj2.item= requestQueue;
-            obj3.item = {};
-            // obj1: parent 1, obj2 :parent 2, obj3: possible request sequences of offspring
-            recombination_cycle_crossover(obj1,obj2, obj3);
-            // mohit recombination issue see starts
+            // obj1.item= requestQueue;
+            // obj2.item= requestQueue;
+            // obj3.item = {};
+            // // obj1: parent 1, obj2 :parent 2, obj3: possible request sequences of offspring
+            // recombination_cycle_crossover(obj1,obj2, obj3);
+            // // mohit recombination issue see starts
             
-            /*
-              //Do recombination here;
-              var recombination_offspring = new Array(offsprings[0].length);
-              for (i = 0; i < offsprings[0].length; ++i) {
-                  recombination_offspring[i] = -1;
-              }
-              var other_offspring_arr = new Array(offsprings[0].length);
-              for (var i = 0; i < offsprings[0].length; ++i) {
-                  other_offspring_arr[i] = offsprings[other_offspring][i];
-              }
-
-              // recombination_cycle_crossover(arr_index,other_offspring_arr,recombination_offspring);
-              obj = {};
-              obj.item = arr, obj1.item = other_offspring_arr, obj2.item = recombination_offspring;
-              recombination_cycle_crossover(obj, obj1, obj2); // obj.item.req_id to be used, arr_index,other_offspring_arr,recombination_offspring
-              arr = obj.item, other_offspring_arr = obj1.item, recombination_offspring = obj2.item;
-              var recombination_offspring_utility = fitness_value_fn(recombination_offspring, 1);
-              // console.log("Fitness value from recombination offspring: %d\n", recombination_offspring_utility);
-              //whether the results due to recombinations are better than the current best result
-              if (recombination_offspring_utility > maximum_utility) {
-                  maximum_utility = recombination_offspring_utility;
-                  final_queue_processing_order = [];
-                  for (i = 0; i < MAX_REQUESTS; ++i) {
-                      final_queue_processing_order[i] = recombination_offspring[i];
-                  }
-              }
-
-            */
-            // mohit recombination issue see ends
-
-            //Print the fitness values for this generation
-
-
-            console.log("List of fitness values for this generation: \n");
-            console.log("utility results: ", utility_results);
-
-            // for (std::list<int>::iterator it=utility_results.begin(); it != utility_results.end(); ++it){
-            //   std::cout << ' ' << *it;
-            //   if(*it > maximum_utility){
-            //     maximum_utility = *it;
-            //     flag = 1;
-
+            // /*
+            //   //Do recombination here;
+            //   var recombination_offspring = new Array(offsprings[0].length);
+            //   for (i = 0; i < offsprings[0].length; ++i) {
+            //       recombination_offspring[i] = -1;
             //   }
-            for (i = 0; i < utility_results.length; ++i) {
-                process.stdout.write('  ', utility_results[i]);
-                if (utility_results[i] > maximum_utility) {
-                    maximum_utility = utility_results[i];
-                    flag = 1;
-                }
-            }
+            //   var other_offspring_arr = new Array(offsprings[0].length);
+            //   for (var i = 0; i < offsprings[0].length; ++i) {
+            //       other_offspring_arr[i] = offsprings[other_offspring][i];
+            //   }
 
-            //Break from loop if no positive reward  in fitness value for past x generations
-            if (flag == 0)
-                termination_count++;
-            if (termination_count == TERMINATION_CONDITION_COUNT)
-                break;
-            utility_results = [];
+            //   // recombination_cycle_crossover(arr_index,other_offspring_arr,recombination_offspring);
+            //   obj = {};
+            //   obj.item = arr, obj1.item = other_offspring_arr, obj2.item = recombination_offspring;
+            //   recombination_cycle_crossover(obj, obj1, obj2); // obj.item.req_id to be used, arr_index,other_offspring_arr,recombination_offspring
+            //   arr = obj.item, other_offspring_arr = obj1.item, recombination_offspring = obj2.item;
+            //   var recombination_offspring_utility = fitness_value_fn(recombination_offspring, 1);
+            //   // console.log("Fitness value from recombination offspring: %d\n", recombination_offspring_utility);
+            //   //whether the results due to recombinations are better than the current best result
+            //   if (recombination_offspring_utility > maximum_utility) {
+            //       maximum_utility = recombination_offspring_utility;
+            //       final_queue_processing_order = [];
+            //       for (i = 0; i < MAX_REQUESTS; ++i) {
+            //           final_queue_processing_order[i] = recombination_offspring[i];
+            //       }
+            //   }
+
+            // */
+            // // mohit recombination issue see ends
+
+            // //Print the fitness values for this generation
+
+
+            // console.log("List of fitness values for this generation: \n");
+            // console.log("utility results: ", utility_results);
+
+            // // for (std::list<int>::iterator it=utility_results.begin(); it != utility_results.end(); ++it){
+            // //   std::cout << ' ' << *it;
+            // //   if(*it > maximum_utility){
+            // //     maximum_utility = *it;
+            // //     flag = 1;
+
+            // //   }
+            // for (i = 0; i < utility_results.length; ++i) {
+            //     process.stdout.write('  ', utility_results[i]);
+            //     if (utility_results[i] > maximum_utility) {
+            //         maximum_utility = utility_results[i];
+            //         flag = 1;
+            //     }
+            // }
+
+            // //Break from loop if no positive reward  in fitness value for past x generations
+            // if (flag == 0)
+            //     termination_count++;
+            // if (termination_count == TERMINATION_CONDITION_COUNT)
+            //     break;
+            // utility_results = [];
 
         }
 
