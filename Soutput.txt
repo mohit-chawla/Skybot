@@ -1,0 +1,333 @@
+The main server is up.
+We have a new socket connection:  iocDGZQQhPRsnHRdAAAA
+All queued
+[ { req_type: 't1',
+    req_id: 1,
+    msg: 'for 1000',
+    timeSt: '"2016-02-06T06:19:45.144Z"' },
+  { req_type: 't2',
+    req_id: 2,
+    msg: 'for 90000',
+    timeSt: '"2016-02-06T06:19:45.144Z"' },
+  { req_type: 't2',
+    req_id: 3,
+    msg: 'for 90000',
+    timeSt: '"2016-02-06T06:19:45.145Z"' },
+  { req_type: 't1',
+    req_id: 4,
+    msg: 'for 1000',
+    timeSt: '"2016-02-06T06:19:45.145Z"' },
+  { req_type: 't1',
+    req_id: 5,
+    msg: 'for 1000',
+    timeSt: '"2016-02-06T06:19:45.145Z"' },
+  { req_type: 't2',
+    req_id: 6,
+    msg: 'for 90000',
+    timeSt: '"2016-02-06T06:19:45.145Z"' } ]
+*****INITIAL POPULATION START*****
+ID:  1  Type:  t1
+ID:  2  Type:  t2
+ID:  3  Type:  t2
+ID:  4  Type:  t1
+ID:  5  Type:  t1
+ID:  6  Type:  t2
+*****INITIAL POPULATION END*****
+
+*****BRUTE FORCE START*****
+Best solution via brute force:  -54
+*****BRUTE FORCE END*****
+brute forcing took: 5.177325 ms
+
+------------------------- GENERATION NUMBER 0------------------------ 
+
+Applying swap mutation
+
+after swapping index 5 1:
+
+1      t1
+6      t2
+3      t2
+4      t1
+5      t1
+2      t2
+
+
+Applying scramble mutation bw 0 4 index
+
+5      t1
+4      t1
+1      t1
+6      t2
+3      t2
+2      t2
+
+
+Applying inverse mutation bw 0 4 index
+
+3     t2
+6     t2
+1     t1
+4     t1
+5     t1
+2     t2
+
+
+Fitness value for this individual : 0
+Fitness value for this individual : 0
+Fitness value for this individual : 0
+First parent selected 0 ,second parent selected = 1
+
+recombi stuff below:
+[ { req_type: 't1',
+    req_id: 1,
+    msg: 'for 1000',
+    timeSt: '"2016-02-06T06:19:45.144Z"' },
+  { req_type: 't2',
+    req_id: 2,
+    msg: 'for 90000',
+    timeSt: '"2016-02-06T06:19:45.144Z"' },
+  { req_type: 't2',
+    req_id: 3,
+    msg: 'for 90000',
+    timeSt: '"2016-02-06T06:19:45.145Z"' },
+  { req_type: 't1',
+    req_id: 4,
+    msg: 'for 1000',
+    timeSt: '"2016-02-06T06:19:45.145Z"' },
+  { req_type: 't1',
+    req_id: 5,
+    msg: 'for 1000',
+    timeSt: '"2016-02-06T06:19:45.145Z"' },
+  { req_type: 't2',
+    req_id: 6,
+    msg: 'for 90000',
+    timeSt: '"2016-02-06T06:19:45.145Z"' } ]
+[]
+{ p1: [], p2: [] }
+List of fitness values for this generation: 
+
+utility results:  [ 0, 0, 0 ]
+      
+------------------------- GENERATION NUMBER 1------------------------ 
+
+Applying swap mutation
+
+after swapping index 2 3:
+
+3      t2
+6      t2
+4      t1
+1      t1
+5      t1
+2      t2
+
+
+Applying scramble mutation bw 3 5 index
+
+3      t2
+6      t2
+4      t1
+5      t1
+2      t2
+1      t1
+
+
+Applying inverse mutation bw 2 4 index
+
+3     t2
+6     t2
+2     t2
+5     t1
+4     t1
+1     t1
+
+
+Fitness value for this individual : 0
+Fitness value for this individual : 0
+Fitness value for this individual : 0
+First parent selected 0 ,second parent selected = 1
+
+recombi stuff below:
+[ { req_type: 't1',
+    req_id: 1,
+    msg: 'for 1000',
+    timeSt: '"2016-02-06T06:19:45.144Z"' },
+  { req_type: 't2',
+    req_id: 2,
+    msg: 'for 90000',
+    timeSt: '"2016-02-06T06:19:45.144Z"' },
+  { req_type: 't2',
+    req_id: 3,
+    msg: 'for 90000',
+    timeSt: '"2016-02-06T06:19:45.145Z"' },
+  { req_type: 't1',
+    req_id: 4,
+    msg: 'for 1000',
+    timeSt: '"2016-02-06T06:19:45.145Z"' },
+  { req_type: 't1',
+    req_id: 5,
+    msg: 'for 1000',
+    timeSt: '"2016-02-06T06:19:45.145Z"' },
+  { req_type: 't2',
+    req_id: 6,
+    msg: 'for 90000',
+    timeSt: '"2016-02-06T06:19:45.145Z"' } ]
+[]
+{ p1: [], p2: [] }
+List of fitness values for this generation: 
+
+utility results:  [ 0, 0, 0 ]
+      
+------------------------- GENERATION NUMBER 2------------------------ 
+
+Applying swap mutation
+
+after swapping index 1 5:
+
+3      t2
+1      t1
+2      t2
+5      t1
+4      t1
+6      t2
+
+
+Applying scramble mutation bw 1 0 index
+
+3      t2
+1      t1
+2      t2
+5      t1
+4      t1
+6      t2
+
+
+Applying inverse mutation bw 3 5 index
+
+3     t2
+1     t1
+2     t2
+6     t2
+4     t1
+5     t1
+
+
+Fitness value for this individual : 0
+Fitness value for this individual : 0
+Fitness value for this individual : 0
+First parent selected 0 ,second parent selected = 1
+
+recombi stuff below:
+[ { req_type: 't1',
+    req_id: 1,
+    msg: 'for 1000',
+    timeSt: '"2016-02-06T06:19:45.144Z"' },
+  { req_type: 't2',
+    req_id: 2,
+    msg: 'for 90000',
+    timeSt: '"2016-02-06T06:19:45.144Z"' },
+  { req_type: 't2',
+    req_id: 3,
+    msg: 'for 90000',
+    timeSt: '"2016-02-06T06:19:45.145Z"' },
+  { req_type: 't1',
+    req_id: 4,
+    msg: 'for 1000',
+    timeSt: '"2016-02-06T06:19:45.145Z"' },
+  { req_type: 't1',
+    req_id: 5,
+    msg: 'for 1000',
+    timeSt: '"2016-02-06T06:19:45.145Z"' },
+  { req_type: 't2',
+    req_id: 6,
+    msg: 'for 90000',
+    timeSt: '"2016-02-06T06:19:45.145Z"' } ]
+[]
+{ p1: [], p2: [] }
+List of fitness values for this generation: 
+
+utility results:  [ 0, 0, 0 ]
+      
+------------------------- GENERATION NUMBER 3------------------------ 
+
+Applying swap mutation
+
+after swapping index 3 5:
+
+3      t2
+1      t1
+2      t2
+5      t1
+4      t1
+6      t2
+
+
+Applying scramble mutation bw 4 5 index
+
+3      t2
+1      t1
+2      t2
+5      t1
+4      t1
+6      t2
+
+
+Applying inverse mutation bw 5 1 index
+
+3     t2
+1     t1
+2     t2
+5     t1
+4     t1
+6     t2
+
+
+Fitness value for this individual : 0
+Fitness value for this individual : 0
+Fitness value for this individual : 0
+First parent selected 0 ,second parent selected = 1
+
+recombi stuff below:
+[ { req_type: 't1',
+    req_id: 1,
+    msg: 'for 1000',
+    timeSt: '"2016-02-06T06:19:45.144Z"' },
+  { req_type: 't2',
+    req_id: 2,
+    msg: 'for 90000',
+    timeSt: '"2016-02-06T06:19:45.144Z"' },
+  { req_type: 't2',
+    req_id: 3,
+    msg: 'for 90000',
+    timeSt: '"2016-02-06T06:19:45.145Z"' },
+  { req_type: 't1',
+    req_id: 4,
+    msg: 'for 1000',
+    timeSt: '"2016-02-06T06:19:45.145Z"' },
+  { req_type: 't1',
+    req_id: 5,
+    msg: 'for 1000',
+    timeSt: '"2016-02-06T06:19:45.145Z"' },
+  { req_type: 't2',
+    req_id: 6,
+    msg: 'for 90000',
+    timeSt: '"2016-02-06T06:19:45.145Z"' } ]
+[]
+{ p1: [], p2: [] }
+List of fitness values for this generation: 
+
+utility results:  [ 0, 0, 0 ]
+      
+---------------------FINAL RESULT:----------------------- 
+
+Maximum fitness value : 0
+
+Final permutation:
+  1
+  6
+  3
+  4
+  5
+  2
+ec approach took: 13.067764 ms

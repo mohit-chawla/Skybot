@@ -5,13 +5,16 @@
 // Author: Kriti Singh
 // Date last modified: 4 February 2016
 /*
- DEVELOPERS' NOTE:
- *** if you get infinite errors of "info  - unhandled socket.io url", do npm install socket.io@1.0
- */
+DEVELOPERS' NOTE:
+
+*** if you get infinite errors of "info  - unhandled socket.io url", do npm install socket.io@1.0
+***if arr is a array/object that you continuously modify and push arr somewhere, the arr/object is pushed BY REFERENCE
+
+DEVELOPERS' NOTE ENDS*/
  // fs was included for writing into file
 var io = require('socket.io').listen(3013),
     fs = require('fs');
-
+    
 
 var requestQueue = [], requestQueueReferenceOrder=[],
     final_queue_processing_order = [],
@@ -56,77 +59,117 @@ var processingTimeOfRequests = 5;
 //   "t2":5
 // };
 
-/*
-function recombination_cycle_crossover(requestQueueObj, other_offspring_arrObj, recombination_offspringObj) { // int *parent1, int *parent2,int *crossover_child:::: arr_index,other_offspring_arr,recombination_offspring
-    // int parent1[] = {0,1,2,3,4};
-    // int parent2[] = {2,3,1,0,4};
-    // int crossover_child[5]={-1,-1,-1,-1,-1};
-    console.log("Parent 1(for recombination):\n");
-    for (var i = 0; i < requestQueueObj.item.length; ++i) {
-        console.log("  %d", requestQueueObj.item[i].req_id);
+
+
+var cyclesPar1 =[],cyclesPar2 =[], buffPar1 = [],buffPar2=[], considered=[], num_of_cycles=0, temp=[], crossover_child=[];
+function recombination_cycle_crossover(arr1,arr2){
+        var placed_count =0, j=0;
+        var n = arr1.length, considered=[], buffPar1=[],buffPar2=[], num_of_cycles=0, temp=[];
+    // var crossover_child = [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1];
+    while(crossover_child.length){
+        crossover_child.pop();
     }
-    console.log("\nParent 2(for recombination):\n");
-    for (var i = 0; i < other_offspring_arrObj.item.length; ++i) {
-        console.log("%d\t", other_offspring_arrObj.item[i]);
-    }
-    // int sd;
-    // scanf("%d",&sd);
-    var placed_count = 0,
-        j = 0;
     //Execute the cycle crossover till all are handled
 
-    // This code not working, goes into infinite loop
-    
-    // while (placed_count < MAX_REQUESTS) {
-    //     console.log('haha');
-    //     var flag = 0;
-    //     for (i = 0; i < MAX_REQUESTS; i++) {
-    //         if (other_offspring_arrObj.item[requestQueueObj.item[j]] === recombination_offspringObj.item[i])
-    //             flag = 1;
-    //     }
-    //     if (flag == 0) {
-    //         recombination_offspringObj.item[j] = other_offspring_arrObj.item[requestQueueObj.item[j].req_id];
-    //         placed_count++;
-    //         j = other_offspring_arrObj.item[j];
-    //     } else {
-    //         //This means a cycle is completed
-    //         for (i = 0; i < MAX_REQUESTS; i++) {
-    //             //Find a new cycle
-    //             if (recombination_offspringObj.item[i] === -1)
-    //                 j = i;
-    //         }
-    //     }
-    //     // printf("j is %d, pc %d\n",j,placed_count );
-    // }
-    
+    for(var j=0; j<n;j++){  
+        if( considered.indexOf(j)==-1 ){
+            val1 = arr1[j];
+            val2 = arr2[j];
+            
+            
+            if(val1 === val2){
 
-    console.log('printing recombination offspring');
-    console.log(recombination_offspringObj.item);
-    
-    // for (i = 0; i < recombination_offspringObj.item.length; i++)
-    //     console.log("%d\t", recombination_offspringObj.item[i]);
+                // console.log("p1 ",val1);
+                considered.push(j);
+                temp=[];
+                temp = [[arr1[j],j]];
+                cyclesPar1[num_of_cycles]=temp;
+                temp=[];
+                temp = [[arr2[j],j]];
+                cyclesPar2[num_of_cycles]=temp;
+                num_of_cycles++;
+                // console.log("----------------");
+                continue;
+            }
+            else{
+                temp=[],buffPar1 = [],buffPar2=[];
+                // console.log("p1 ",val1);
+                considered.push(j);
+                temp = [arr1[j],j];
+                buffPar1.push(temp);
+
+                
+                while(val1 != val2){
+                    // console.log("p2 ",val2);
+
+                    temp=[];
+                    temp = [val2,arr2.indexOf(val2)];
+                    buffPar2.push(temp);
+
+                    var p = arr1.indexOf(val2);
+                     val2 = arr2[p];
+
+                    considered.push(p);
+                    temp = [arr1[p],p];
+                    buffPar1.push(temp);
+                }
+
+                temp=[];
+                temp = [val2,arr2.indexOf(val2)];
+                buffPar2.push(temp);
+                cyclesPar1[num_of_cycles]=buffPar1;
+                cyclesPar2[num_of_cycles]=buffPar2;
+                
+                num_of_cycles++;
+
+            // console.log("----------------");
+            
+            }
+        }
     }
-*/
-
-function recombination_cycle_crossover(parent1Obj, parent2Obj, recombination_offspringObj) { // int *parent1, int *parent2,int *crossover_child:::: arr_index,other_offspring_arr,recombination_offspring
-    console.log(parent1Obj.item);
-    // console.log(parent2Obj.item);
-    var cycles = [], placed_count=0, k = parent1Obj.item.length;
-    var buff = {p1:[], p2:[]};
-    console.log(cycles);
+    // console.log("cyclesPar1");
+    // console.log(cyclesPar1);
+    // console.log("cyclesPar2");
+    // console.log(cyclesPar2);
 
 
-    // for(i=0;i<requestQueueObj.item.length;i++){
-    //     if(i%2===0){
-    //         buff.p1.push(requestQueueObj.item[i]);
-    //     }
-    //     else{
-    //         buff.p2.push(requestQueueObj.item[i]);
-    //     }
-    // }
-    
-    console.log(buff);
+    baby1 = new Array(arr1.length);
+    baby2 = new Array(arr1.length);
+
+    for(var k =0; k<cyclesPar1.length;k++){
+        if(k%2===0){ // use parent 1 characteristics
+            for(var j=0; j<cyclesPar1[k].length;j++){
+                // console.log("p1 ",cyclesPar1[k][j]);
+                baby1[cyclesPar1[k][j][1]] = cyclesPar1[k][j][0];
+            }
+            // for(var j=0; j<cyclesPar2[k].length;j++){
+            //     // console.log("p1 ",cyclesPar1[k][j]);
+            //     baby2[cyclesPar2[k][j][1]] = cyclesPar2[k][j][0];
+            // }
+        }
+        else{ // use parent 2 characteristics
+            for(var j=0; j<cyclesPar2[k].length;j++){
+                // console.log("p2 ",cyclesPar2[k][j][0]);
+                baby1[cyclesPar2[k][j][1]] = cyclesPar2[k][j][0];
+            }
+            // for(var j=0; j<cyclesPar1[k].length;j++){
+            //     // console.log("p2 ",cyclesPar2[k][j][0]);
+            //     baby2[cyclesPar1[k][j][1]] = cyclesPar1[k][j][0];
+            // }
+        }
     }
+    crossover_child.push(baby1);
+    // console.log("recomb 1", baby1); // works fine
+    // console.log("recomb 2", baby2); // not working fine
+
+}
+
+
+
+
+
+
+
 
     function request_array_from_order(reference_order_array, original_request_queue){
         var n = reference_order_array.length;
@@ -484,10 +527,10 @@ io.sockets.on('connection', function(socket) {
                     // offsprings[temp_mutation_iterator][col_iterator] = arr_index[col_iterator];
                     // offsprings[temp_mutation_iterator][col_iterator] = arr[col_iterator];
                     
-                    console.log("before: ",offsprings);
-                    offsprings.push(arr); // didnt work
+                    // console.log("before: ",offsprings);
+                    offsprings.push(arr.slice(0)); // didnt work
                     // offsprings[temp_mutation_iterator] = arr;
-                    console.log("after: ",offsprings);
+                    // console.log("after: ",offsprings);
                     
                 // }
                 temp_mutation_iterator++;
@@ -515,10 +558,10 @@ io.sockets.on('connection', function(socket) {
                 // for (var col_iterator = 0; col_iterator < offsprings[0].length; col_iterator++) {
                 //     // offsprings[temp_mutation_iterator][col_iterator] = arr_index[col_iterator];
                 //     offsprings[temp_mutation_iterator][col_iterator] = arr[col_iterator].req_id;
-                    console.log("before: ",offsprings);
-                    offsprings.push(arr); // didnt work
+                    // console.log("before: ",offsprings);
+                    offsprings.push(arr.slice(0)); // didnt work
                     // offsprings[temp_mutation_iterator] = arr;
-                    console.log("after: ",offsprings);
+                    // console.log("after: ",offsprings);
                     
                 // }
                 temp_mutation_iterator++;
@@ -546,10 +589,10 @@ io.sockets.on('connection', function(socket) {
                 // for (col_iterator = 0; col_iterator < offsprings[0].length; col_iterator++)
                 //     offsprings[temp_mutation_iterator][col_iterator] = arr[col_iterator].req_id;
                     
-                    console.log("before: ",offsprings);
-                    offsprings.push(arr); // didnt work
+                    // console.log("before: ",offsprings);
+                    offsprings.push(arr.slice(0)); // didnt work
                     // offsprings[temp_mutation_iterator] = arr;
-                    console.log("after: ",offsprings);
+                    // console.log("after: ",offsprings);
                     
                 temp_mutation_iterator++;
                 
@@ -572,8 +615,8 @@ io.sockets.on('connection', function(socket) {
                     // this_offspring_arr_temp[i] = offsprings[k][i];
                 // }
                 ///////////////////////////////////////////////////////////////////////////////////////////////////////////works fine till here
-                
-                var this_generation_utility = fitness_value_fn(offsprings[k], 1);
+                var this_offspring_req_queue = request_array_from_order(offsprings[k], requestQueue);
+                var this_generation_utility = fitness_value_fn(this_offspring_req_queue, 1);
                 console.log('this gen ',this_generation_utility,' max ',maximum_utility);
 
                 if (this_generation_utility > maximum_utility) {
@@ -585,30 +628,24 @@ io.sockets.on('connection', function(socket) {
                         final_queue_processing_order.pop();
                     }
                     // for (i = 0; i < offsprings[0].length; ++i) {
-                        final_queue_processing_order.push(offsprings[k]);
+                        final_queue_processing_order.push(offsprings[k].slice(0));
                     // }
                 }
 
             }
-            // //Select the second survivor(parent)
-            // other_offspring = best_offspring;
-            // do {
-            //     other_offspring = generate_random_number(NUMBER_OF_OFFSPRINGS - 1);
+            //Select the second survivor(parent)
+            other_offspring = best_offspring;
+            do {
+                other_offspring = generate_random_number(offsprings.length - 1);
 
-            // } while (other_offspring == best_offspring);
+            } while (other_offspring == best_offspring);
 
-            // console.log("First parent selected %d ,second parent selected = %d\n", best_offspring, other_offspring);
-            // console.log("recombi stuff below:");
-
-            // obj1.item= requestQueue;
-            // obj2.item= requestQueue;
-            // obj3.item = {};
-            // // obj1: parent 1, obj2 :parent 2, obj3: possible request sequences of offspring
-            // recombination_cycle_crossover(obj1,obj2, obj3);
-            // // mohit recombination issue see starts
+            console.log("First parent selected %d ,second parent selected = %d\n", best_offspring, other_offspring);
+            console.log("recombi stuff below:");
             
-            // /*
-            //   //Do recombination here;
+            recombination_cycle_crossover(offsprings[best_offspring],offsprings[other_offspring]);
+            console.log("baby is: ", crossover_child);
+              //Do recombination here;
             //   var recombination_offspring = new Array(offsprings[0].length);
             //   for (i = 0; i < offsprings[0].length; ++i) {
             //       recombination_offspring[i] = -1;
@@ -618,52 +655,46 @@ io.sockets.on('connection', function(socket) {
             //       other_offspring_arr[i] = offsprings[other_offspring][i];
             //   }
 
-            //   // recombination_cycle_crossover(arr_index,other_offspring_arr,recombination_offspring);
-            //   obj = {};
-            //   obj.item = arr, obj1.item = other_offspring_arr, obj2.item = recombination_offspring;
-            //   recombination_cycle_crossover(obj, obj1, obj2); // obj.item.req_id to be used, arr_index,other_offspring_arr,recombination_offspring
-            //   arr = obj.item, other_offspring_arr = obj1.item, recombination_offspring = obj2.item;
-            //   var recombination_offspring_utility = fitness_value_fn(recombination_offspring, 1);
-            //   // console.log("Fitness value from recombination offspring: %d\n", recombination_offspring_utility);
-            //   //whether the results due to recombinations are better than the current best result
-            //   if (recombination_offspring_utility > maximum_utility) {
-            //       maximum_utility = recombination_offspring_utility;
-            //       final_queue_processing_order = [];
-            //       for (i = 0; i < MAX_REQUESTS; ++i) {
-            //           final_queue_processing_order[i] = recombination_offspring[i];
-            //       }
-            //   }
+            var crossover_child_req_queue = request_array_from_order(crossover_child[0], requestQueue);
+            
+            var recombination_offspring_utility = fitness_value_fn(crossover_child_req_queue, 1);
 
-            // */
-            // // mohit recombination issue see ends
+              console.log("Fitness value from recombination offspring: %d\n", recombination_offspring_utility);
+              // whether the results due to recombinations are better than the current best result
+              if (recombination_offspring_utility > maximum_utility) {
+                  maximum_utility = recombination_offspring_utility;
 
-            // //Print the fitness values for this generation
+                while(final_queue_processing_order.length){
+                    final_queue_processing_order.pop();
+                }
+                final_queue_processing_order.push(crossover_child[0]);
+
+              }
+
+            //Print the fitness values for this generation
 
 
-            // console.log("List of fitness values for this generation: \n");
-            // console.log("utility results: ", utility_results);
+            console.log("List of fitness values for this generation: \n");
+            console.log("utility results: ", utility_results);
 
-            // // for (std::list<int>::iterator it=utility_results.begin(); it != utility_results.end(); ++it){
-            // //   std::cout << ' ' << *it;
-            // //   if(*it > maximum_utility){
-            // //     maximum_utility = *it;
-            // //     flag = 1;
+            
+            for (var i = 0; i < utility_results.length; ++i) {
+                process.stdout.write('  ', utility_results[i]);
+                if (utility_results[i] > maximum_utility) {
+                    maximum_utility = utility_results[i];
+                    flag = 1;
+                }
+            }
 
-            // //   }
-            // for (i = 0; i < utility_results.length; ++i) {
-            //     process.stdout.write('  ', utility_results[i]);
-            //     if (utility_results[i] > maximum_utility) {
-            //         maximum_utility = utility_results[i];
-            //         flag = 1;
-            //     }
-            // }
-
-            // //Break from loop if no positive reward  in fitness value for past x generations
-            // if (flag == 0)
-            //     termination_count++;
-            // if (termination_count == TERMINATION_CONDITION_COUNT)
-            //     break;
-            // utility_results = [];
+            //Break from loop if no positive reward  in fitness value for past x generations
+            if (flag == 0)
+                termination_count++;
+            if (termination_count == TERMINATION_CONDITION_COUNT)
+                break;
+            // empty utility_results
+            while(utility_results.length){
+                utility_results.pop();
+            }
 
         }
 
@@ -680,12 +711,15 @@ io.sockets.on('connection', function(socket) {
         var ecEnd = process.hrtime(ecStart);
         console.log('ec approach took: %d ms', (1000 * ecEnd[0]) + (ecEnd[1] / 1000000));
         // ec approach ends here        
-
+        socket.emit('display results', 'hehehe zola');
     });
 
     socket.on('disconnect', function() {
         console.log('A client disconnected: ', socket.id);
     });
+
+
+
 });
 
 

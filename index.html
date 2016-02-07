@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<script type="text/javascript" src="js/jquery.min.js"></script>
+	<script src="js/d3.min.js" charset="utf-8"></script> 
+	<script src="js/c3.min.js"></script>
+	<link href="css/c3.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+	<div id="performanceGraphElement" style="width:100%;">
+		<center><h1>MAHH DIV</h1></center>
+	</div>
+
+<script type="text/javascript">
+	// var json = (function () {
+	//     var json = null;
+	//     $.ajax({
+	//         'async': false,
+	//         'global': false,
+	//         'url': './results.json',
+	//         'dataType': "json",
+	//         'success': function (data) {
+	//             json = data;
+	//         }
+	//     });
+	//     console.log(json);
+	//     console.log("--------------------------");
+	//     return json;
+	// })();
+
+	var json = {
+	"brute-force":[{"requests":5,"time":1},{"requests":55,"time":11},{"requests":555,"time":111}],
+	"fcfs":[{"requests":5,"time":3},{"requests":55,"time":13},{"requests":555,"time":113}],
+	"ec":[{"requests":5,"time":5},{"requests":55,"time":15},{"requests":555,"time":115}],
+	"sjf":[{"requests":5,"time":7},{"requests":55,"time":17},{"requests":555,"time":117}]
+	};
+
+	var numOfStrategies=0, columnsData=[], requestNumberData=[];
+	var tempArr=[], noOfSamplingInstances=0;
+	var keysArrayReference = Object.keys(json);
+	// modern browsers allow this, the next line is pure GOLD :)
+	numOfStrategies = keysArrayReference.length;
+	console.log(keysArrayReference);
+	console.log(numOfStrategies);
+
+	// create all the object arrays to used in data rendering
+	while(columnsData.length>0){
+		columnsData.pop();
+	}
+	console.log(columnsData);
+
+	for(i=0;i<numOfStrategies;i++){
+		while(tempArr.length>0){
+			tempArr.pop();
+		}
+		noOfSamplingInstances=0;
+		noOfSamplingInstances = json[keysArrayReference[i]].length;
+		console.log(noOfSamplingInstances);
+		// console.log( typeof keysArrayReference[i]);
+		tempArr.push(keysArrayReference[i]);
+		for(j=0;j<noOfSamplingInstances;j++){
+			// console.log(json[keysArrayReference[i]][j].time);
+			// tempArr[j+1] = json[keysArrayReference[i]][j].time;
+			tempArr.push(json[keysArrayReference[i]][j].time);
+		}
+		console.log(tempArr);
+
+		// columnsData = columnsData.slice();
+		// columnsData.push( tempArr );
+		tempArr = [tempArr];
+		columnsData = $.merge($.merge([], columnsData), tempArr);
+		// columnsData.push(tempArr);
+		console.log(columnsData);
+
+	}
+		console.log('correct this:');
+		console.log(columnsData);
+
+
+		// sampling numbers list
+		while(tempArr.length>0){
+			tempArr.pop();
+		}
+		for(j=0;j<json[keysArrayReference[0]].length;j++){
+			// console.log(json[keysArrayReference[i]][j].time);
+			tempArr[j] =    json[keysArrayReference[0]][j].requests;
+		}
+		requestNumberData = tempArr;
+		console.log(requestNumberData);
+
+	var performanceGraph = c3.generate({
+		bindto:'#performanceGraphElement',
+	    data: {
+	    	// x:'x',
+	        // columns: [
+	        // 	// ['x', 'www.site1.com', 'www.site2.com', 'www.site3.com'],
+	        //  	// y values for a particular caegory
+	        //     ['fcfs', 1, 11, 111, 120],
+	        //     ['sjf', 11, 21, 121, 124]
+	        //     // ,['data2', 50, 20, 10, 40, 15, 25]
+	        //     // ,['data3', 130, 150, 200, 300, 200, 100]
+	        // ]
+	        columns : columnsData
+	    }
+	    // if a point doesn't have a value then connect the previous point to the next point
+	    ,line: {
+	        connectNull: true
+	    }
+	    ,axis: {
+	         y: {
+	         	// label: 'Time taken (ms)',
+             	tick: {
+                	values: [0,20,40,60,80,100,120,140]
+                }
+            },
+	         
+	         x: {
+	            // show: true,
+	            type: 'category',
+	            categories: requestNumberData,
+	            label: 'Number of requests',
+	            tick: {
+	                values: requestNumberData
+	            }
+
+	            }
+	    }
+	    
+	});
+
+	// following is for loading animation
+	// setTimeout(function () {
+	//     performanceGraph.load({
+	//         columns: [
+	//             ['data1', 230, 190, 300, 500, 300, 400]
+	//         ]
+	//     });
+	// }, 1000);
+
+	// setTimeout(function () {
+	//     performanceGraph.load({
+	//         columns: [
+	//             ['data3', 130, 150, 200, 300, 200, 100]
+	//         ]
+	//     });
+	// }, 1500);
+
+
+	// $("#performanceGraphElement").empty();
+	// $("#performanceGraphElement").append(performanceGraph.element);
+	console.log('local: ',app.locals.title);
+</script>
+</body>
+</html>

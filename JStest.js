@@ -37,10 +37,12 @@ function recombination_cycle_crossover(arr1,arr2){
 				considered.push(j);
 				temp=[];
 				temp = [[arr1[j],j]];
-				cyclesPar1[num_of_cycles]=temp;
+				// cyclesPar1[num_of_cycles]=temp;
+				cyclesPar1.push(temp.slice(0));
 				temp=[];
 				temp = [arr2[j],j];
-				cyclesPar2[num_of_cycles]=temp;
+				// cyclesPar2[num_of_cycles]=temp;
+				cyclesPar2.push(temp.slice(0));
 				num_of_cycles++;
 				// console.log("----------------");
 				continue;
@@ -81,7 +83,9 @@ function recombination_cycle_crossover(arr1,arr2){
 			}
 		}
 	}
+	console.log("cyclesPar1");
 	console.log(cyclesPar1);
+	console.log("cyclesPar2");
 	console.log(cyclesPar2);
 
 

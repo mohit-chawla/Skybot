@@ -1,0 +1,201 @@
+The main server is up.
+We have a new socket connection:  xR9-29_6FJ72SlkLAAAA
+All queued
+*****INITIAL POPULATION START*****
+ID:  1  Type:  t1
+ID:  2  Type:  t2
+ID:  3  Type:  t2
+ID:  4  Type:  t1
+ID:  5  Type:  t1
+ID:  6  Type:  t2
+*****INITIAL POPULATION END*****
+
+*****BRUTE FORCE START*****
+Best solution via brute force:  -54
+*****BRUTE FORCE END*****
+brute forcing took: 4.005304 ms
+
+------------------------- GENERATION NUMBER 0------------------------ 
+
+Applying swap mutation
+
+after swapping index 0 2:
+
+3      t2
+2      t2
+1      t1
+4      t1
+5      t1
+6      t2
+
+
+Applying scramble mutation bw 5 1 index
+
+3      t2
+2      t2
+1      t1
+4      t1
+5      t1
+6      t2
+
+
+Applying inverse mutation bw 5 1 index
+
+3     t2
+2     t2
+1     t1
+4     t1
+5     t1
+6     t2
+
+
+Fitness value for this individual : 0
+Fitness value for this individual : 0
+Fitness value for this individual : 0
+First parent selected 0 ,second parent selected = 1
+
+List of fitness values for this generation: 
+
+utility results:  [ 0, 0, 0 ]
+      
+------------------------- GENERATION NUMBER 1------------------------ 
+
+Applying swap mutation
+
+after swapping index 2 0:
+
+1      t1
+2      t2
+3      t2
+4      t1
+5      t1
+6      t2
+
+
+Applying scramble mutation bw 5 1 index
+
+1      t1
+2      t2
+3      t2
+4      t1
+5      t1
+6      t2
+
+
+Applying inverse mutation bw 0 4 index
+
+5     t1
+4     t1
+3     t2
+2     t2
+1     t1
+6     t2
+
+
+Fitness value for this individual : 0
+Fitness value for this individual : 0
+Fitness value for this individual : 0
+First parent selected 0 ,second parent selected = 1
+
+List of fitness values for this generation: 
+
+utility results:  [ 0, 0, 0 ]
+      
+------------------------- GENERATION NUMBER 2------------------------ 
+
+Applying swap mutation
+
+after swapping index 2 5:
+
+5      t1
+4      t1
+6      t2
+2      t2
+1      t1
+3      t2
+
+
+Applying scramble mutation bw 2 1 index
+
+5      t1
+4      t1
+6      t2
+2      t2
+1      t1
+3      t2
+
+
+Applying inverse mutation bw 1 3 index
+
+5     t1
+2     t2
+6     t2
+4     t1
+1     t1
+3     t2
+
+
+Fitness value for this individual : 0
+Fitness value for this individual : 0
+Fitness value for this individual : 0
+First parent selected 0 ,second parent selected = 1
+
+List of fitness values for this generation: 
+
+utility results:  [ 0, 0, 0 ]
+      
+------------------------- GENERATION NUMBER 3------------------------ 
+
+Applying swap mutation
+
+after swapping index 3 4:
+
+5      t1
+2      t2
+6      t2
+1      t1
+4      t1
+3      t2
+
+
+Applying scramble mutation bw 4 1 index
+
+5      t1
+2      t2
+6      t2
+1      t1
+4      t1
+3      t2
+
+
+Applying inverse mutation bw 3 2 index
+
+5     t1
+2     t2
+6     t2
+1     t1
+4     t1
+3     t2
+
+
+Fitness value for this individual : 0
+Fitness value for this individual : 0
+Fitness value for this individual : 0
+First parent selected 0 ,second parent selected = 1
+
+List of fitness values for this generation: 
+
+utility results:  [ 0, 0, 0 ]
+      
+---------------------FINAL RESULT:----------------------- 
+
+Maximum fitness value : 0
+
+Final permutation:
+  3
+  2
+  1
+  4
+  5
+  6
+ec approach took: 9.845739 ms
