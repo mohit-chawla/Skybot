@@ -1,5 +1,3 @@
-//REIVEW: Always write program desc and author and date(optional)
-//REVIEW_RESPONSE:
 // Program name: serverserver.js
 // Program description: Server script to evaluate computation times for various scheduling aproaches
 // Author: Kriti Singh
@@ -11,35 +9,38 @@ DEVELOPERS' NOTE:
 ***if arr is a array/object that you continuously modify and push arr somewhere, the arr/object is pushed BY REFERENCE
 
 DEVELOPERS' NOTE ENDS*/
- // fs was included for writing into file
 var io = require('socket.io').listen(3013),
-    fs = require('fs');
+    fs = require('fs');  // fs was included for writing into file
     
 
-var requestQueue = [], requestQueueReferenceOrder=[],
-    final_queue_processing_order = [],
-    utility_results = [], offsprings = [];
+var requestQueue = [], //stores the original object
+    requestQueueReferenceOrder=[],  //stores the request-id : REVIEW: write storage format here
+    final_queue_processing_order = [], // REVIEW : What does this store
+    utility_results = [], // REVIEW: 
+    offsprings = []; // REVIEW: temp array to store offsprings of each Generation
 
-//REVIEW: what does each of them store?, use self descriptive naming or comment about it!
 //REVIEW_RESPONSE: declare some global OBJECTS to be passed to functions so that variables are modified (in js they are passed by copy, objects are not) 
 // eg. as in swap, and permute functions
+//REVIEW: if needed keep it, else remove
 var o = {x:0,y:0},
     obj = {},
     obj1 = {},
     obj2 = {},
     obj3 = {};
 
-//Defining number of generations
+//Define number of generations
 const NUMBER_OF_GENERATIONS = 4;
+//REVIEW: verify this shit
 //Define number of offsprings per generation
 const NUMBER_OF_OFFSPRINGS = 3;
+
 // Number of request profiles
 const NUM_REQ_TYPES = 2;
 // Request queue size
 const MAX_REQUESTS = 10;
-//
+//REVIEW: this vs num_of_gen
 const TERMINATION_CONDITION_COUNT = 20;
-//
+
 const MINUS_INFINITY = -99999;
 
 // Variables used for random number generater
@@ -52,7 +53,6 @@ var queue__init_permutation;
 
 
 //REVIEW: we are fixing it to be 5 seconds currently, MUST CHANGE IT LATER, different for each type of requests
-//REVIEW_RESPONSE: commented sample codebelow
 var processingTimeOfRequests = 5;
 // var processingTimeOfRequests = {
 //   "t1":10,
@@ -61,7 +61,13 @@ var processingTimeOfRequests = 5;
 
 
 
-var cyclesPar1 =[],cyclesPar2 =[], buffPar1 = [],buffPar2=[], considered=[], num_of_cycles=0, temp=[], crossover_child=[];
+var cyclesPar1 =[],cyclesPar2 =[], //Cycle crossover parents
+    buffPar1 = [],buffPar2=[],  //Temp-buffer array for Cycle crossover
+    considered=[], //REVIEW :change the name     //used for storing indices cycles taken care of
+    num_of_cycles=0, 
+    temp=[], 
+    crossover_child=[]; //REVIEW: change name apt.
+
 function recombination_cycle_crossover(arr1,arr2){
         var placed_count =0, j=0;
         var n = arr1.length, considered=[], buffPar1=[],buffPar2=[], num_of_cycles=0, temp=[];
@@ -164,28 +170,25 @@ function recombination_cycle_crossover(arr1,arr2){
 
 }
 
+//Generates requests-object-array from request-id-array
+function request_array_from_order(reference_order_array, original_request_queue){
+    var n = reference_order_array.length;
+    var m = original_request_queue.length;
+    var tempRequestArray = new Array(n);
 
-
-
-
-
-
-
-    function request_array_from_order(reference_order_array, original_request_queue){
-        var n = reference_order_array.length;
-        var m = original_request_queue.length;
-        var tempRequestArray = new Array(n);
-
-        for(var i=0;i<n;i++){
-            for(var j=0;j<m;j++){
-                if(original_request_queue[j].req_id === reference_order_array[i]){
-                    tempRequestArray[i] = original_request_queue[j];
-                    break;
-                }
+    //REVIEW: not sure but complexity can be less than O(m*n)
+    for(var i=0;i<n;i++){
+        for(var j=0;j<m;j++){
+            if(original_request_queue[j].req_id === reference_order_array[i]){
+                tempRequestArray[i] = original_request_queue[j];
+                break;
             }
         }
-        return tempRequestArray;
     }
+    return tempRequestArray; //return array-of-objects (constructed from original req Q)
+}
+
+    
 
 //Function to simulate swap mutation
 function mutate_swap(requestQueueObj) {
@@ -193,6 +196,7 @@ function mutate_swap(requestQueueObj) {
     var n = requestQueueObj.item.length;
     var pos1 = generate_random_number(n);
     var pos2 = generate_random_number(n);
+    //REVIEW: check whether seeding is needed, else it might go in a random loop
     while (pos2 === pos1) { // to ensure unique num generation
         pos2 = generate_random_number(n);
     }
@@ -217,32 +221,6 @@ function mutate_swap(requestQueueObj) {
 
 // Function to simulate inverse mutation
 
-// backup
-// function mutate_inverse(requestQueueObj) {
-
-//     console.log("Applying inverse mutation\n");
-//     var n = requestQueueObj.item.length;
-//     var pos1 = generate_random_number(n);
-//     // var pos2 = generate_random_number(n);
-//     // std::vector<int> vector;
-//     // std::vector<int> vector_index;
-//     // for(int i = 0; i < n;i++)
-//     // {
-//     //     vector_index.push_back(arr_index[i]);
-//     //     vector.push_back(arr[i]);
-//     // }
-//     // std::reverse(vector.begin(), vector.end());
-//     // std::reverse(vector_index.begin()+pos1, vector_index.end()-pos1);
-//     // int x=0;
-//     // for (std::vector<int>::iterator itv=vector.begin(); itv != vector.end(); ++itv){
-//     //   arr[x++] = *itv;
-//     // }
-//     // x=0;
-//     // for (std::vector<int>::iterator itvv=vector_index.begin(); itvv != vector_index.end(); ++itvv){
-//     //   arr_index[x++] = *itvv;
-//     // }
-//     requestQueueObj.item.reverse();
-// }
 
 function mutate_inverse(requestQueueObj) {
 
