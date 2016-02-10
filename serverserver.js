@@ -52,7 +52,7 @@ var processingTimeOfRequests = 5;
 
 
 
-var crossover_child = []; //REVIEW: change name apt.
+var recombination_offspring = []; //REVIEW: change name apt.
 
 function recombination_cycle_crossover(arr1, arr2) {
     var placed_count = 0,
@@ -67,8 +67,8 @@ function recombination_cycle_crossover(arr1, arr2) {
         num_of_cycles = 0,
         temp = [];
 
-    while (crossover_child.length) {
-        crossover_child.pop();
+    while (recombination_offspring.length) {
+        recombination_offspring.pop();
     }
 
     //Execute the cycle crossover till all are handled
@@ -158,7 +158,7 @@ function recombination_cycle_crossover(arr1, arr2) {
             // }
         }
     }
-    crossover_child.push(baby1);
+    recombination_offspring.push(baby1);
     // console.log("recomb 1", baby1); // works fine
     // console.log("recomb 2", baby2); // not working fine
 
@@ -185,10 +185,10 @@ function request_array_from_order(reference_order_array, original_request_queue)
 
 
 //Function to simulate swap mutation
-function mutate_swap(requestQueueObj) {
+function mutate_swap(parent_requestId_array) {
     console.log("Applying swap mutation\n");
-    // var n = requestQueueObj.item.length;
-    var n = requestQueueObj.length;
+    
+    var n = parent_requestId_array.length;
     var pos1 = generate_random_number(n);
     var pos2 = generate_random_number(n);
     //REVIEW: check whether seeding is needed, else it might go in a random loop
@@ -197,17 +197,11 @@ function mutate_swap(requestQueueObj) {
     }
 
     // swap items at pos1 and pos2
-    // o.x = requestQueueObj.item[pos1];
-    // o.y = requestQueueObj.item[pos2];
-    // swap(o);
-    // requestQueueObj.item[pos1] = o.x;
-    // requestQueueObj.item[pos2] = o.y;
-
-    var temp_swap_var = swap(requestQueueObj[pos1], requestQueueObj[pos2]);
-    requestQueueObj[pos1] = temp_swap_var[0];
-    requestQueueObj[pos2] = temp_swap_var[1];
+    var temp_swap_var = swap(parent_requestId_array[pos1], parent_requestId_array[pos2]);
+    parent_requestId_array[pos1] = temp_swap_var[0];
+    parent_requestId_array[pos2] = temp_swap_var[1];
     console.log("after swapping index %d %d:\n", pos1, pos2);
-    return requestQueueObj;
+    return parent_requestId_array;
 }
 
 //REVIEW: Give a sample request queue obj here in comments
@@ -220,13 +214,12 @@ function mutate_swap(requestQueueObj) {
 // }
 
 // Function to simulate inverse mutation
-function mutate_inverse(requestQueueObj) {
+function mutate_inverse(parent_requestId_array) {
 
     //REVIEW: approach: generate two random numbers and reverse the "sub-array" bw the two positions, i don't think you are doing that
     //REVIEW_RESPONSE: did so, hadnt understood the purpose the last time
 
-    // var n = requestQueueObj.item.length;
-    var n = requestQueueObj.length;
+    var n = parent_requestId_array.length;
     var pos1 = generate_random_number(n);
     var pos2 = generate_random_number(n);
     while (pos2 === pos1) { // to ensure unique num generation
@@ -242,12 +235,12 @@ function mutate_inverse(requestQueueObj) {
     }
     console.log("Applying inverse mutation bw %d %d index\n", pos1, pos2);
     for (; l < r; l += 1, r -= 1) {
-        var temporary = requestQueueObj[l];
-        requestQueueObj[l] = requestQueueObj[r];
-        requestQueueObj[r] = temporary;
+        var temporary = parent_requestId_array[l];
+        parent_requestId_array[l] = parent_requestId_array[r];
+        parent_requestId_array[r] = temporary;
     }
-    // requestQueueObj.item.reverse();
-    return requestQueueObj;
+
+    return parent_requestId_array;
 }
 
 // randomise shuffle an array Object from index l to r inclusive
@@ -267,14 +260,14 @@ function shuffleArray(array, l, r) {
 // console.log("kay: ",kay);
 
 //Function to simulate scramble mutation
-function mutate_scramble(requestQueueObj) {
-    var n = requestQueueObj.length;
+function mutate_scramble(parent_requestId_array) {
+    var n = parent_requestId_array.length;
 
     //REVIEW: your approach takes O(n) while it should be done in O(1)
     //REVIEW: you are doing this random swapping n times , it should be : select 2 positions randomly, and shuffle the subarray bw those two positions
     //REVIEW: Shuffle function-> http://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
     //REVIEW_RESPONSE: resolved
-    // for (i = 0; i < n; ++i) {
+    
     //Pick two positions randomly
     var pos1 = generate_random_number(n),
         pos2 = generate_random_number(n);
@@ -283,14 +276,15 @@ function mutate_scramble(requestQueueObj) {
     }
     console.log("Applying scramble mutation bw %d %d index\n", pos1, pos2);
     if (pos1 < pos2) {
-        requestQueueObj = shuffleArray(requestQueueObj, pos1, pos2);
+        parent_requestId_array = shuffleArray(parent_requestId_array, pos1, pos2);
     } else {
-        requestQueueObj = shuffleArray(requestQueueObj, pos2, pos1);
+        parent_requestId_array = shuffleArray(parent_requestId_array, pos2, pos1);
     }
 
-    // }
-    return requestQueueObj;
+    return parent_requestId_array;
 }
+
+
 
 /*
 Fitness Function mathematical
@@ -310,36 +304,31 @@ f(x) = 0        ; 0<=x<=60
 Fitness Function mathematical ends here
 */
 
-
-
 //Function to calculate fitness value
-function fitness_value_fn(queue, printflag) { // expects a queue of objects
-    //Define the initial variables
+function fitness_value_fn(queue, printflag) { // expects an array of request-objects
 
+    var time_spent = 0,
+        fitness_val = 0;    // variable to store fitness value of the queue passed
+    for (var j = 0; j < queue.length; j++) {
+        // Request has been processed , now lets calculate the utility(fitness/happiness value of the waiting user)
 
-    var j, time_spent = 0,
-        fitness_val = 0;
-    for (j = 0; j < queue.length; j++) { // was MAX_REQUESTS
-        //Request has been processed 
-        //Now lets calculate the utility(fitness/happiness value of the waiting user)
-
+        time_spent += processingTimeOfRequests;
         // in future, for different request processing times
         // if( queue[j].req_type === "t1"){
         //   time_spent += processingTimeOfRequests.t1;
-        // }else{
+        // } else{
         //   time_spent += processingTimeOfRequests.t2;
         // }
-        time_spent += processingTimeOfRequests;
-        // if request is of type 1
-        if (queue[j].req_type === "t1") {
+        
+        if (queue[j].req_type === "t1") {   // if request is of type 1
             if (time_spent <= 50) {
                 fitness_val += (-(90) / 50) * time_spent;
             } else {
                 fitness_val += (-90);
             }
         }
-        //else if request is of type 2
-        else {
+        
+        else {  //else if request is of type 2
             if (time_spent <= 60) {
                 fitness_val += 0;
 
@@ -349,69 +338,56 @@ function fitness_value_fn(queue, printflag) { // expects a queue of objects
                 fitness_val += (-90);
             }
         }
-        //printf("Completion time:%d milliseconds \n",time_spent);
-
     }
+
     if (printflag === 1) {
         console.log("Fitness value for this individual : %d", fitness_val);
     }
+
     utility_results.push(fitness_val);
-    // console.log('queue :\n',queue);
-    // console.log('fitness val ',fitness_val);
     return fitness_val;
 }
+
 //Function to generate a random number within an assigned limit
 function generate_random_number(size) {
     return Math.floor(Math.random() * size);
 }
-
-// the object used to swap
-/*
-  for items a, b; to swap(a,b) use as:
-
-  o.x = a;
-  o.y = b;
-  swap(o);
-  a = o.x;
-  b = o.y
-
-*/
-
-
-// function swap(obj) {
-//     var tmp = obj.x;
-//     obj.x = obj.y;
-//     obj.y = tmp;
-// }
-
+// function to swap two variables
+// to use:
+// 1. var some_variable = swap(x,y);
+// 2. update as x = some_variable[0], y = some_variable[1];
 function swap(a, b) {
     return [b, a];
 }
 
-var permArr = [],
-    usedChars = [];
-
+// variables declared for permute function, declared GLOBALLY as permute function is recursive.
+var permArr = [], usedChars = [];
+// function to find all possible permutations of an array, returns 2D array
 function permute(input) {
     var i, ch;
     for (i = 0; i < input.length; i++) { //   loop over all elements 
-        ch = input.splice(i, 1)[0]; //1. pull out each element in turn
-        usedChars.push(ch); //   push this element
-        if (input.length == 0) { //2. if input is empty, we pushed every element
-            permArr.push(usedChars.slice()); //   so add it as a permutation
+        ch = input.splice(i, 1)[0];      //1. pull out each element in turn
+        usedChars.push(ch);              // push this element
+        if (input.length == 0) {          //2. if input is empty, we pushed every element
+            permArr.push(usedChars.slice()); // so add it as a permutation
         }
-        permute(input); //3. compute the permutation of the smaller array
-        input.splice(i, 0, ch); //4. add the original element to the beginning 
-        //   making input the same size as when we started
-        //   but in a different order
-        usedChars.pop(); //5. remove the element we pushed
+        permute(input);                   //3. compute the permutation of the smaller array
+        input.splice(i, 0, ch);           //4. add the original element to the beginning 
+                                          //   making input the same size as when we started
+                                          //   but in a different order
+        usedChars.pop();                 //5. remove the element we pushed
     }
     return permArr; //return, but this only matters in the last call
 };
+// REVIEW K: find a better permute function, that is not recursive (so no global var) and returns only unique permutaions
+// REVIEW K: not a problem as of now since used only once (in brute force)
 
+// test script for permute
 // console.log(permute([1,2,3,4]));
 
 
 io.sockets.on('connection', function(socket) {
+    
     console.log('We have a new socket connection: ', socket.id);
 
     socket.on('job request', function(data) { // store all the requests from client with this socket id        
@@ -442,10 +418,11 @@ io.sockets.on('connection', function(socket) {
 
         ////////////////////////////////////////////// Brute force starts here //////////////////////////////////////////////
         console.log('--------------------BRUTE FORCE START--------------------');
-        var bruteForceStart = process.hrtime();
+        var bruteForceStart = process.hrtime(); // save the start time in a label
         queue__init_permutation = permute(arr); //2-D ARRAY THAT STORES ALL POSSIBLE PERMUATIONS OF REQUESTS QUEUE OBJECTS
 
         for (var i = 0; i < queue__init_permutation.length; i++) {
+            // generate an array of corresponding request-objects to calculate fitness value
             var tempRequestArray = request_array_from_order(queue__init_permutation[i], requestQueue);
             // console.log("temp req arr: ",tempRequestArray);
             var temp_val_brute = fitness_value_fn(tempRequestArray, 0);
@@ -453,7 +430,7 @@ io.sockets.on('connection', function(socket) {
                 brute_force_best_soln = temp_val_brute;
         }
         console.log("Best solution via brute force: ", brute_force_best_soln);
-        var bruteForceEnd = process.hrtime(bruteForceStart);
+        var bruteForceEnd = process.hrtime(bruteForceStart);    // save the DIFFERENCE FROM THE START LABEL time in a label
 
         console.log('brute forcing took: %d ms', (1000 * bruteForceEnd[0]) + (bruteForceEnd[1] / 1000000));
         console.log('--------------------BRUTE FORCE END--------------------\n\n');
@@ -464,9 +441,10 @@ io.sockets.on('connection', function(socket) {
         ////////////////////////////////////////////// ec approach starts here //////////////////////////////////////////////
         var ecStart = process.hrtime();
 
-        var maximum_utility = MINUS_INFINITY;
+        var maximum_utility = MINUS_INFINITY; // global comparator for all offsprings in ec approach
 
         //Clear the initial values in the utility
+        // REVIEW K: sort out the scope of currently global utilitty_results variable to save space and TIME ON DOIN THE POPS BELOW
         while (utility_results.length) {
             utility_results.pop();
         }
@@ -482,11 +460,9 @@ io.sockets.on('connection', function(socket) {
             var offsprings = []; // temp array to store offsprings of each Generation, created locally to avoid emptying it every time
             
             console.log("arr: ", arr);
-            console.log("offsprings: ", offsprings);
+            console.log("offsprings at gen start: ", offsprings);
             
-            //Swap mutation for this generation
-            
-
+            //////// Swap mutation for this generation starts ////////
             arr = mutate_swap(arr);
 
             //Printing the parent after the swap mutation
@@ -504,8 +480,9 @@ io.sockets.on('connection', function(socket) {
             offsprings.push(arr.slice(0)); // didnt work
             // console.log("after: ",offsprings);
             temp_mutation_iterator++;
-            
-            //Scramble mutation for this generation
+            //////// Swap mutation for this generation ends ////////
+
+            //////// Scramble mutation for this generation starts ////////
             arr = mutate_scramble(arr);
             //REVIEW: i think the comment below should be "scramble"
             //REVIEW_RESPONSE: resolved
@@ -522,7 +499,9 @@ io.sockets.on('connection', function(socket) {
             // console.log("after: ",offsprings);
 
             temp_mutation_iterator++;
+            //////// Scramble mutation for this generation ends ////////
 
+            //////// Inverse mutation for this generation starts ////////
             arr = mutate_inverse(arr);
 
             //REVIEW: i think the comment below should be "inverse"
@@ -541,14 +520,10 @@ io.sockets.on('connection', function(socket) {
 
             temp_mutation_iterator++;
 
-            // };
+            //////// Inverse mutation for this generation ends ////////
+            console.log("offsprings at gen end: ", offsprings);
 
-            // generate_offsprings_swap(generate_offsprings_scramble); // each function works fine as a unit
-
-            console.log("offsprings");
-            console.log(offsprings);
-
-            var best_offspring, other_offspring;
+            var best_offspring, other_offspring; // store index no. in offsprings[] for this generation
             //SURVIVOR SELECTION
             for (var k = 0; k < offsprings.length; k++) {
 
@@ -563,17 +538,18 @@ io.sockets.on('connection', function(socket) {
                     flag = 1;
                     best_offspring = k;
                     maximum_utility = this_generation_utility;
-                    // final_queue_processing_order = [];
+                    // empty final_queue_processing_order
                     while (final_queue_processing_order.length) {
                         final_queue_processing_order.pop();
                     }
-                    // for (i = 0; i < offsprings[0].length; ++i) {
+                    
                     final_queue_processing_order.push(offsprings[k].slice(0));
-                    // }
+                    
                 }
 
             }
             //Select the second survivor(parent)
+            // REVIEW K: why random, why not second best?
             other_offspring = best_offspring;
             do {
                 other_offspring = generate_random_number(offsprings.length - 1);
@@ -581,14 +557,13 @@ io.sockets.on('connection', function(socket) {
             } while (other_offspring == best_offspring);
 
             console.log("First parent selected %d ,second parent selected = %d\n", best_offspring, other_offspring);
-            console.log("recombi stuff below:");
-
-            recombination_cycle_crossover(offsprings[best_offspring], offsprings[other_offspring]);
-            console.log("baby is: ", crossover_child);
             //Do recombination here
+            recombination_cycle_crossover(offsprings[best_offspring], offsprings[other_offspring]);
+            console.log("baby is: ", recombination_offspring);
+            
 
-            var crossover_child_req_queue = request_array_from_order(crossover_child[0], requestQueue);
-            var recombination_offspring_utility = fitness_value_fn(crossover_child_req_queue, 1);
+            var recombination_offspring_req_object_queue = request_array_from_order(recombination_offspring[0], requestQueue);
+            var recombination_offspring_utility = fitness_value_fn(recombination_offspring_req_object_queue, 1);
 
             console.log("Fitness value from recombination offspring: %d\n", recombination_offspring_utility);
             // whether the results due to recombinations are better than the current best result
@@ -598,7 +573,7 @@ io.sockets.on('connection', function(socket) {
                 while (final_queue_processing_order.length) {
                     final_queue_processing_order.pop();
                 }
-                final_queue_processing_order.push(crossover_child[0]);
+                final_queue_processing_order.push(recombination_offspring[0]);
 
             }
 
@@ -608,7 +583,7 @@ io.sockets.on('connection', function(socket) {
 
 
             for (var i = 0; i < utility_results.length; ++i) {
-                process.stdout.write('  ', utility_results[i]);
+                process.stdout.write('  ', utility_results[i]); // process.stdout.write used to print in a single line
                 if (utility_results[i] > maximum_utility) {
                     maximum_utility = utility_results[i];
                     flag = 1;
