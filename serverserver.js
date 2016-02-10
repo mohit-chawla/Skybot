@@ -549,7 +549,7 @@ io.sockets.on('connection', function(socket) {
 
             }
             //Select the second survivor(parent)
-            // REVIEW K: why random, why not second best?
+            //ss REVIEW K: why random, why not second best?
             other_offspring = best_offspring;
             do {
                 other_offspring = generate_random_number(offsprings.length - 1);
