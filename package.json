@@ -1,10 +1,10 @@
 {
-  "name": "myApp",
+  "name": "skybot",
   "version": "1.0.0",
   "description": "two servers created, one listens for requests from other",
   "main": "",
-  "repository": "",
-  "author": "Kriti Singh <kriti96.singh@gmail.com>",
+  "repository": "git@github.com:mohit-chawla/Skybot.git",
+  "author": "Mohit Chawla <www.mohitchawla.in>, Kriti Singh <kriti96.singh@gmail.com>",
   "dependencies": {
     "express": "~3.2.4",
     "socket.io": "^1.0.6"

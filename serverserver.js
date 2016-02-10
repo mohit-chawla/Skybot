@@ -1,9 +1,14 @@
-// Program name: serverserver.js
-// Program description: Server script to evaluate computation times for various scheduling aproaches
-// Author: Kriti Singh
-// Date last modified: 4 February 2016
-/*
+/*                                                                                                      *           *           * * * *
+// Program name: serverserver.js                                                                        * *       * *         *
+// Program description: Server script to evaluate computation times for various scheduling aproaches    *   *   *   *        *
+// Authors: Mohit Chawla <www.mohitchawla.in>, Kriti Singh <kriti96.singh@gmail.com>                 *************************************
+*                                                                                                       *           *      *****
+/                                                                                                       *           *         *
+/                                                                                                       *           *           * * * *
+/*  
 DEVELOPERS' NOTE:
+Running the program
+node serverserver.js NUMBER_OF_GENERATIONS
 
 *** if you get infinite errors of "info  - unhandled socket.io url", do npm install socket.io@1.0
 ***if arr is a array/object that you continuously modify and push arr somewhere, the arr/object is pushed BY REFERENCE
@@ -11,6 +16,8 @@ DEVELOPERS' NOTE:
 DEVELOPERS' NOTE ENDS*/
 var io = require('socket.io').listen(3013),
     fs = require('fs'); // fs was included for writing into file
+
+var terminalArgs = process.argv.slice(2); //Taking input from terminal
 
 
 var requestQueue = [], //stores the original object
@@ -20,14 +27,13 @@ var requestQueue = [], //stores the original object
     utility_results = []; // global array used by fitness function to push fitness values of 
 
 
-
-const NUMBER_OF_GENERATIONS = 4; //Define number of generations
-//REVIEW: verify this shit
-
+//REVIEW: Read this from terminal
+const NUMBER_OF_GENERATIONS = terminalArgs[0]; //Define number of generations
+console.log("server configured to use "+NUMBER_OF_GENERATIONS+" generations!");
 const NUMBER_OF_OFFSPRINGS = 3; //Define number of offsprings per generation
 
 
-const NUM_REQ_TYPES = 2; // Number of request profiles
+const NUM_OF_REQUEST_PROFILES = 2; // Number of request profiles
 
 const MAX_REQUESTS = 10; // Request queue size
 //REVIEW: this vs num_of_gen
@@ -42,12 +48,12 @@ const ERR_NO_MEM = -2
 var brute_force_best_soln = MINUS_INFINITY,
     queue__init_permutation;
 
-//REVIEW: we are fixing it to be 5 seconds currently, MUST CHANGE IT LATER, different for each type of requests
-var processingTimeOfRequests = 5;
-// var processingTimeOfRequests = {
-//   "t1":10,
-//   "t2":5
-// };
+// var PROCESSING_TIME_OF_REQUESTS = 5;
+
+var PROCESSING_TIME_OF_REQUESTS = {
+  "t1":10,
+  "t2":5
+};
 
 
 
@@ -312,15 +318,16 @@ function fitness_value_fn(queue, printflag) { // expects an array of request-obj
     for (var j = 0; j < queue.length; j++) {
         // Request has been processed , now lets calculate the utility(fitness/happiness value of the waiting user)
 
-        time_spent += processingTimeOfRequests;
+        // time_spent += PROCESSING_TIME_OF_REQUESTS;
         // in future, for different request processing times
-        // if( queue[j].req_type === "t1"){
-        //   time_spent += processingTimeOfRequests.t1;
-        // } else{
-        //   time_spent += processingTimeOfRequests.t2;
-        // }
+        if( queue[j].req_type === "t1"){
+          time_spent += PROCESSING_TIME_OF_REQUESTS.t1;
+        } else{
+          time_spent += PROCESSING_TIME_OF_REQUESTS.t2;
+        }
         
         if (queue[j].req_type === "t1") {   // if request is of type 1
+
             if (time_spent <= 50) {
                 fitness_val += (-(90) / 50) * time_spent;
             } else {
@@ -451,8 +458,9 @@ io.sockets.on('connection', function(socket) {
         var termination_count = 0,
             termination_comparator = maximum_utility; // termination_comparator never used
 
-        for (var gen = 0; gen < NUMBER_OF_GENERATIONS; ++gen) {
+        for (var gen = 0; gen < NUMBER_OF_GENERATIONS; ++gen) { 
             var flag = 0; //For useless generation criteria
+            //REVIEW: the flag should me mentioned in the research paper
             var temp_mutation_iterator = 0;
 
             console.log("------------------------- GENERATION NUMBER %d------------------------", gen);
@@ -521,7 +529,7 @@ io.sockets.on('connection', function(socket) {
             temp_mutation_iterator++;
 
             //////// Inverse mutation for this generation ends ////////
-            console.log("offsprings at gen end: ", offsprings);
+            console.log("offsprings at mutation end: ", offsprings);
 
             var best_offspring, other_offspring; // store index no. in offsprings[] for this generation
             //SURVIVOR SELECTION
