@@ -574,7 +574,6 @@ io.sockets.on('connection', function(socket) {
                     final_queue_processing_order.pop();
                 }
                 final_queue_processing_order.push(recombination_offspring[0]);
-
             }
 
             //Print the fitness values for this generation
@@ -583,7 +582,8 @@ io.sockets.on('connection', function(socket) {
 
 
             for (var i = 0; i < utility_results.length; ++i) {
-                process.stdout.write('  ', utility_results[i]); // process.stdout.write used to print in a single line
+                // process.stdout.write used to print in a single line, couldn't find another fn
+                process.stdout.write('  ', utility_results[i]); 
                 if (utility_results[i] > maximum_utility) {
                     maximum_utility = utility_results[i];
                     flag = 1;
