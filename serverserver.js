@@ -7,7 +7,7 @@
 /                                                                                                       *           *           * * * *
 /*  
 DEVELOPERS' NOTE:
-Running the program
+Running the programmmmmmm
 node serverserver.js NUMBER_OF_GENERATIONS PROGRAM_RUN_ID
 
 *** if you get infinite errors of "info  - unhandled socket.io url", do npm install socket.io@1.0
@@ -682,12 +682,44 @@ io.sockets.on('connection', function(socket) {
     
         }
         
+
+        // empty stuff now
+        console.log('\n\nEMPTYING...');
+        // empty the server variables used globally
+            requestQueue = [],
+    requestQueueReferenceOrder = [], 
+    final_queue_processing_order = [],
+    utility_results = [],
+    brute_force_best_soln = MINUS_INFINITY,
+    queue__init_permutation=[],
+    recombination_offspring = [],
+    permArr = [],
+    usedChars = [];
+        console.log('EMPTIED!');
+        
         // trigger event to tell client server to display the visualisation
         socket.emit('display results', 'hehehe zola');
     });
 
     socket.on('disconnect', function() {
         console.log('A client disconnected: ', socket.id);
+         // whenever a client disconnects, empty the global variables (for safety)
+        console.log('\n\nEMPTYING...');
+        // empty the server variables used globally
+        // the following and not .pop method 
+        // * breaks any references to it
+        // * leaves the old values at the mercy of garbagecollection
+            requestQueue = [],
+            requestQueueReferenceOrder = [], 
+            final_queue_processing_order = [],
+            utility_results = [],
+            brute_force_best_soln = MINUS_INFINITY,
+            queue__init_permutation=[],
+            recombination_offspring = [],
+            permArr = [],
+            usedChars = [];
+        console.log('EMPTIED!');
+        console.log('waiting for sb else to connect');
     });
 
 
