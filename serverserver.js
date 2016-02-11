@@ -475,10 +475,7 @@ io.sockets.on('connection', function(socket) {
 
             //Printing the parent after the swap mutation
             for (i = 0; i < arr.length; ++i) {
-                //REVIEW: i think there should be one more %d
-                //REVIEW_RESPONSE: request type is string, so nope.
                 console.log("%d ", arr[i]);
-
             }
             console.log("----------------\n");
             //Saving the new mutated offspring
@@ -490,10 +487,8 @@ io.sockets.on('connection', function(socket) {
             temp_mutation_iterator++;
             //////// Swap mutation for this generation ends ////////
 
-            //////// Scramble mutation for this generation starts ////////
+            //////// SCRAMBLE MUTATION FOR THIS GENERATION STARTS HERE ////////
             arr = mutate_scramble(arr);
-            //REVIEW: i think the comment below should be "scramble"
-            //REVIEW_RESPONSE: resolved
             //Printing the mutant after the scramble mutation
             for (i = 0; i < arr.length; ++i) {
                 //REVIEW: i think there should be one more %d
