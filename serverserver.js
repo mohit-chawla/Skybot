@@ -8,7 +8,7 @@
 /*  
 DEVELOPERS' NOTE:
 Running the program
-node serverserver.js NUMBER_OF_GENERATIONS
+node serverserver.js NUMBER_OF_GENERATIONS PROGRAM_RUN_ID
 
 *** if you get infinite errors of "info  - unhandled socket.io url", do npm install socket.io@1.0
 ***if arr is a array/object that you continuously modify and push arr somewhere, the arr/object is pushed BY REFERENCE
@@ -16,6 +16,52 @@ node serverserver.js NUMBER_OF_GENERATIONS
 DEVELOPERS' NOTE ENDS*/
 var io = require('socket.io').listen(3013),
     fs = require('fs'); // fs was included for writing into file
+
+var mongoose  = require('mongoose');
+
+/////////////////// DATABASE CONFIG AND CONNECTION START HERE //////////////////////
+const DATABASE_SAVE_FLAG = false;  //Set this flag to true to enable logging to database
+
+var dbName = "/scheduling_server";
+
+var link_to_db;
+// if OPENSHIFT env variables are present, use the available connection info:
+if (process.env.OPENSHIFT_MONGODB_DB_URL) {
+    link_to_db = process.env.OPENSHIFT_MONGODB_DB_URL +
+    process.env.OPENSHIFT_APP_NAME;
+}
+else{
+  link_to_db = 'mongodb://localhost';
+}
+
+
+// Connection to Mongo DB
+mongoose.connect(link_to_db+dbName, function(err){
+  if(err){
+    console.log('Unable to connect to db'+err);
+  }
+  else{
+    console.log('Database connection successful');
+  }
+});
+
+/////////////////////////// DATABASE SCHEMA/MODEL STARTS HERE //////////////////////////
+
+var dbSchema = mongoose.Schema({
+  runResult: {
+    runID: {type: String, default: null}, //used to differentiate different test-runs of the program, assigned to PROGRAM_RUN_ID
+    bruteForceTime:{type:String, default:null},     //Time taken by brute force
+    bruteForceUtility:{type:String, default:null},  //Best answer by brute force 
+    ecApproachTime:{type: String, default: null},   //Time taken by ec approach
+    ecApproachUtility:{type: String, default: null},//Best answer by ec approach
+    timeStamp: {type: Date, default:null}
+  }
+});
+
+var researchModel = mongoose.model('researchModel', dbSchema, 'researchCollection');
+/////////////////////////// DATABASE SCHEMA/MODEL ENDS HERE //////////////////////////
+
+/////////////////// DATABASE CONFIG AND CONNECTION END HERE //////////////////////
 
 var terminalArgs = process.argv.slice(2); //Taking input from terminal
 
@@ -26,10 +72,12 @@ var requestQueue = [], //stores the original object
     // REVIEW: 
     utility_results = []; // global array used by fitness function to push fitness values of 
 
+const PROGRAM_RUN_ID = terminalArgs[1] || 11 ;  //11 for the case user forgets to supply from terminal
 
 //REVIEW: Read this from terminal
 const NUMBER_OF_GENERATIONS = terminalArgs[0]; //Define number of generations
 console.log("server configured to use "+NUMBER_OF_GENERATIONS+" generations!");
+
 const NUMBER_OF_OFFSPRINGS = 3; //Define number of offsprings per generation
 
 
@@ -438,8 +486,8 @@ io.sockets.on('connection', function(socket) {
         }
         console.log("Best solution via brute force: ", brute_force_best_soln);
         var bruteForceEnd = process.hrtime(bruteForceStart);    // save the DIFFERENCE FROM THE START LABEL time in a label
-
-        console.log('brute forcing took: %d ms', (1000 * bruteForceEnd[0]) + (bruteForceEnd[1] / 1000000));
+        var bruteForceTime_in_ms = (1000 * bruteForceEnd[0]) + (bruteForceEnd[1] / 1000000);
+        console.log('brute forcing took: %d ms and gave best solution as %d', bruteForceTime_in_ms, brute_force_best_soln);
         console.log('--------------------BRUTE FORCE END--------------------\n\n');
         ////////////////////////////////////////////// Brute force ends here //////////////////////////////////////////////
 
@@ -611,11 +659,29 @@ io.sockets.on('connection', function(socket) {
         for (i = 0; i < final_queue_processing_order.length; ++i) {
             console.log(' ', final_queue_processing_order[i]);
         }
-
+        var ecBestSolution = maximum_utility;
         var ecEnd = process.hrtime(ecStart);
-        console.log('ec approach took: %d ms', (1000 * ecEnd[0]) + (ecEnd[1] / 1000000));
+        var ecApproachTime_in_ms = (1000 * ecEnd[0]) + (ecEnd[1] / 1000000);
+        console.log('brute forcing took: %d ms and gave best solution as %d', bruteForceTime_in_ms, brute_force_best_soln);
+        console.log('ec approach took: %d ms and gave final result %d',ecApproachTime_in_ms, ecBestSolution);
         ////////////////////////////////////////////// ec approach ends here  //////////////////////////////////////////////
 
+        //Save results to the database if the DATABASE_SAVE_FLAG is true
+        if(DATABASE_SAVE_FLAG){
+            //Note:runID -> get from terminal -> used to differentiate different test runs of the program
+            var finalResultToDatabase = new researchModel({ runResult:{runID : PROGRAM_RUN_ID, bruteForceTime:bruteForceTime_in_ms,bruteForceUtility: brute_force_best_soln, ecApproachTime:ecApproachTime_in_ms, ecApproachUtility: ecBestSolution}});
+
+            finalResultToDatabase.save(function(err){
+              if(err){
+                console.log("unable to save to database"+err);
+              }
+              else{
+                console.log("Database insertion successful");
+              }
+            })
+    
+        }
+        
         // trigger event to tell client server to display the visualisation
         socket.emit('display results', 'hehehe zola');
     });
