@@ -453,6 +453,9 @@ io.sockets.on('connection', function(socket) {
     socket.on('sending done', function() { // after all requests have been queued by the client server (no more incoming), this event is fired to start the computations
         console.log('All queued');
 
+        // calculate the fcfs utility value for the benchmark/comparison
+        var fcfs_utility_value = fitness_value_fn(requestQueue, 1);
+
         for (var i = 0; i < requestQueue.length; i++) {
             requestQueueReferenceOrder.push(requestQueue[i].req_id);
         }
@@ -662,6 +665,7 @@ io.sockets.on('connection', function(socket) {
         var ecBestSolution = maximum_utility;
         var ecEnd = process.hrtime(ecStart);
         var ecApproachTime_in_ms = (1000 * ecEnd[0]) + (ecEnd[1] / 1000000);
+        console.log('fcfs gives solution as %d', fcfs_utility_value);
         console.log('brute forcing took: %d ms and gave best solution as %d', bruteForceTime_in_ms, brute_force_best_soln);
         console.log('ec approach took: %d ms and gave final result %d',ecApproachTime_in_ms, ecBestSolution);
         ////////////////////////////////////////////// ec approach ends here  //////////////////////////////////////////////
