@@ -44,6 +44,7 @@ app.use(express.static(__dirname+'/public'));
 var dbSchema = mongoose.Schema({
   runResult: {
     runID: {type: String, default: null}, //unique id to determine the "run" of algorithm {run: one loop of server processing}
+    numOfRequests:{type:String, default:null},     //
     bruteForceTime:{type:String, default:null},     //Time taken by brute force
     bruteForceUtility:{type:String, default:null},  //Best answer by brute force 
     ecApproachTime:{type: String, default: null},   //Time taken by ec approach
@@ -54,16 +55,16 @@ var dbSchema = mongoose.Schema({
 
 var researchModel = mongoose.model('researchModel', dbSchema, 'researchCollection');
 
-var testSample = new researchModel({ runResult:{runID : '111225'}});
+// var testSample = new researchModel({ runResult:{runID : '111225'}});
 
-testSample.save(function(err){
-  if(err){
-    console.log("unable to save to database"+err);
-  }
-  else{
-    console.log("Database insertion successful");
-  }
-})
+// testSample.save(function(err){
+//   if(err){
+//     console.log("unable to save to database"+err);
+//   }
+//   else{
+//     console.log("Database insertion successful");
+//   }
+// })
 /////////////////////////// DATABASE SCHEMA/MODEL ENDS HERE //////////////////////////
 
 // Defining a route handler '/' that gets called whenever we hit index.html
@@ -80,6 +81,7 @@ io.on('connection', function(socket){
     }
     else{
       //Send data to front end here
+      console.log(JSON.stringify(foundData));
       socket.emit("data_from_db_ready", foundData);
 
     }

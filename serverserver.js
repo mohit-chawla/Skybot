@@ -20,7 +20,7 @@ var io = require('socket.io').listen(3013),
 var mongoose  = require('mongoose');
 
 /////////////////// DATABASE CONFIG AND CONNECTION START HERE //////////////////////
-const DATABASE_SAVE_FLAG = false;  //Set this flag to true to enable logging to database
+const DATABASE_SAVE_FLAG = true;  //Set this flag to true to enable logging to database
 
 var dbName = "/scheduling_server";
 
@@ -50,6 +50,7 @@ mongoose.connect(link_to_db+dbName, function(err){
 var dbSchema = mongoose.Schema({
   runResult: {
     runID: {type: String, default: null}, //used to differentiate different test-runs of the program, assigned to PROGRAM_RUN_ID
+    numOfRequests:{type:String, default:null},     //
     bruteForceTime:{type:String, default:null},     //Time taken by brute force
     bruteForceUtility:{type:String, default:null},  //Best answer by brute force 
     ecApproachTime:{type: String, default: null},   //Time taken by ec approach
@@ -665,6 +666,8 @@ io.sockets.on('connection', function(socket) {
         var ecBestSolution = maximum_utility;
         var ecEnd = process.hrtime(ecStart);
         var ecApproachTime_in_ms = (1000 * ecEnd[0]) + (ecEnd[1] / 1000000);
+        var numOfRequestsRecieved = requestQueue.length;
+        console.log("Number of requests recieved by the server"+numOfRequestsRecieved);
         console.log('fcfs gives solution as %d', fcfs_utility_value);
         console.log('brute forcing took: %d ms and gave best solution as %d', bruteForceTime_in_ms, brute_force_best_soln);
         console.log('ec approach took: %d ms and gave final result %d',ecApproachTime_in_ms, ecBestSolution);
@@ -673,7 +676,7 @@ io.sockets.on('connection', function(socket) {
         //Save results to the database if the DATABASE_SAVE_FLAG is true
         if(DATABASE_SAVE_FLAG){
             //Note:runID -> get from terminal -> used to differentiate different test runs of the program
-            var finalResultToDatabase = new researchModel({ runResult:{runID : PROGRAM_RUN_ID, bruteForceTime:bruteForceTime_in_ms,bruteForceUtility: brute_force_best_soln, ecApproachTime:ecApproachTime_in_ms, ecApproachUtility: ecBestSolution}});
+            var finalResultToDatabase = new researchModel({ runResult:{runID : PROGRAM_RUN_ID, numOfRequests:numOfRequestsRecieved, bruteForceTime:bruteForceTime_in_ms,bruteForceUtility: brute_force_best_soln, ecApproachTime:ecApproachTime_in_ms, ecApproachUtility: ecBestSolution}});
 
             finalResultToDatabase.save(function(err){
               if(err){
