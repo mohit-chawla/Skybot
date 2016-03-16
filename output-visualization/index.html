@@ -21,6 +21,7 @@
 		// console.log(dataFromDB);
 		// var dataFromServer = JSON.parse(dataFromDB);
 			var json = {"bruteForce": [], "ec": []};
+			var maxTimeTaken = Number.NEGATIVE_INFINITY, minTimeTaken = Number.POSITIVE_INFINITY;
 
 		dataFromDB.forEach(function(data){
 			console.log("RunID:"+data.runResult.runID);
@@ -28,8 +29,24 @@
 			json.bruteForce.push({"requests":data.runResult.numOfRequests,"time":data.runResult.bruteForceTime});
 			json.ec.push({"requests":data.runResult.numOfRequests,"time":data.runResult.ecApproachTime});
 
+			if(data.runResult.bruteForceTime > maxTimeTaken)
+				maxTimeTaken = data.runResult.bruteForceTime;
+			if(data.runResult.ecApproachTime > maxTimeTaken)
+				maxTimeTaken = data.runResult.ecApproachTime;
+			if(data.runResult.bruteForceTime < minTimeTaken)
+				minTimeTaken = data.runResult.bruteForceTime;
+			if(data.runResult.ecApproachTime < minTimeTaken)
+				minTimeTaken = data.runResult.ecApproachTime;
 		});
 			console.log(JSON.stringify(json));
+			// console.log(minTimeTaken);
+			// console.log(maxTimeTaken);
+
+			minTimeTaken = Math.floor(minTimeTaken);
+			maxTimeTaken = Math.ceil(maxTimeTaken);
+
+			// console.log(minTimeTaken);
+			// console.log(maxTimeTaken);
 
 		//STEP2: Parse data
 		//STEP3: Plot data
@@ -130,9 +147,11 @@
 			    ,axis: {
 			         y: {
 			         	label: 'Time taken (ms)',
-		             	tick: {
-		                	values: [0,1,5,10,20,40,60,80,100,120,140]
-		                }
+		             	// tick: {
+		              //   	values: [0,1,5,10,20,40,60,80,100,120,140]
+		              //   }
+		                max: maxTimeTaken,
+            			min: minTimeTaken
 		            },
 			         
 			         x: {
