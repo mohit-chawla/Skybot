@@ -922,6 +922,7 @@ io.sockets.on('connection', function(socket) {
         // the following and not .pop method 
         // * breaks any references to it
         // * leaves the old values at the mercy of garbagecollection
+        requestQueue_total = [],
             requestQueue = [],
             requestQueueReferenceOrder = [], 
             final_queue_processing_order = [],
