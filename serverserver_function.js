@@ -789,21 +789,21 @@ io.sockets.on('connection', function(socket) {
                 };
                 ////////////////////////////////////////////// ec approach ends here  //////////////////////////////////////////////
 
-                //Save results to the database if the DATABASE_SAVE_FLAG is true
-                if(DATABASE_SAVE_FLAG){
-                    //Note:runID -> get from terminal -> used to differentiate different test runs of the program
-                    var finalResultToDatabase = new researchModel({ runResult:{runID : PROGRAM_RUN_ID, numOfRequests:numOfRequestsRecieved, bruteForceTime:bruteForceTime_in_ms,bruteForceUtility: brute_force_best_soln, ecApproachTime:ecApproachTime_in_ms, ecApproachUtility: ecBestSolution}});
+                // //Save results to the database if the DATABASE_SAVE_FLAG is true
+                // if(DATABASE_SAVE_FLAG){
+                //     //Note:runID -> get from terminal -> used to differentiate different test runs of the program
+                //     var finalResultToDatabase = new researchModel({ runResult:{runID : PROGRAM_RUN_ID, numOfRequests:numOfRequestsRecieved, bruteForceTime:bruteForceTime_in_ms,bruteForceUtility: brute_force_best_soln, ecApproachTime:ecApproachTime_in_ms, ecApproachUtility: ecBestSolution}});
 
-                    finalResultToDatabase.save(function(err){
-                      if(err){
-                        console.log("unable to save to database"+err);
-                      }
-                      else{
-                        console.log("Database insertion successful");
-                      }
-                    })
+                //     finalResultToDatabase.save(function(err){
+                //       if(err){
+                //         console.log("unable to save to database"+err);
+                //       }
+                //       else{
+                //         console.log("Database insertion successful");
+                //       }
+                //     })
             
-                }
+                // }
                 
 
 
@@ -842,7 +842,7 @@ io.sockets.on('connection', function(socket) {
             analyzed_ecSegmentProcessingTimeSpent = 0
             analyzed_PreviousSegmentProcessingTimeSpent = 0;
 
-        var discreteQueueSize = 5;
+        var discreteQueueSize = 10;
         var numOfDiscreteQueues = 0,
             numOfExtraRequests = 0;
 
@@ -909,6 +909,43 @@ io.sockets.on('connection', function(socket) {
             console.log('ecBestSolution ', analyzed_ecBestSolution);
             console.log('ecTimeInMs ', analyzed_ecTimeInMs);
             console.log('ecSegmentProcessingTimeSpent ', analyzed_ecSegmentProcessingTimeSpent);
+        }
+
+
+        //Save results to the database if the DATABASE_SAVE_FLAG is true
+        if(DATABASE_SAVE_FLAG){
+            //Note:runID -> get from terminal -> used to differentiate different test runs of the program
+            // var finalResultToDatabase = new researchModel({ 
+            //     runResult:{
+            //         runID : PROGRAM_RUN_ID, 
+            //         numOfRequests:numOfRequestsRecieved, 
+            //         bruteForceTime:bruteForceTime_in_ms,
+            //         bruteForceUtility: brute_force_best_soln, 
+            //         ecApproachTime:ecApproachTime_in_ms, 
+            //         ecApproachUtility: ecBestSolution
+            //     }
+            // });
+
+            var finalResultToDatabase = new researchModel({ 
+                runResult:{
+                    runID : PROGRAM_RUN_ID, 
+                    numOfRequests: requestQueueLength, 
+                    bruteForceTime: analyzed_bruteForceTimeInMs,
+                    bruteForceUtility: analyzed_bruteForceBestSolution, 
+                    ecApproachTime: analyzed_ecTimeInMs, 
+                    ecApproachUtility: analyzed_ecBestSolution
+                }
+            });
+
+            finalResultToDatabase.save(function(err){
+              if(err){
+                console.log("unable to save to database"+err);
+              }
+              else{
+                console.log("Database insertion successful");
+              }
+            })
+        
         }
 
         // console.log(iterationReturnValue);
