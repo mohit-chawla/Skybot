@@ -8,7 +8,7 @@
 	<link href="css/c3.css" rel="stylesheet" type="text/css">
 </head>
 <body>
-	<div id="performanceGraphElement" style="width:100%;">
+	<div id="performanceGraphElement" style="width:100%; height:600px;">
 		<center><h1>LOADING....</h1></center>
 	</div>
 	<script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
@@ -24,19 +24,19 @@
 			var maxTimeTaken = Number.NEGATIVE_INFINITY, minTimeTaken = Number.POSITIVE_INFINITY;
 
 		dataFromDB.forEach(function(data){
-			console.log("RunID:"+data.runResult.runID);
-			console.log("RunID:"+data.runResult.numOfRequests);
+			console.log(typeof data.runResult.runID);
+			console.log("RunID: %d    numOfRequests: %d",parseInt(data.runResult.runID), parseInt(data.runResult.numOfRequests));
 			json.bruteForce.push({"requests":data.runResult.numOfRequests,"time":data.runResult.bruteForceTime});
 			json.ec.push({"requests":data.runResult.numOfRequests,"time":data.runResult.ecApproachTime});
 
-			if(data.runResult.bruteForceTime > maxTimeTaken)
-				maxTimeTaken = data.runResult.bruteForceTime;
-			if(data.runResult.ecApproachTime > maxTimeTaken)
-				maxTimeTaken = data.runResult.ecApproachTime;
-			if(data.runResult.bruteForceTime < minTimeTaken)
-				minTimeTaken = data.runResult.bruteForceTime;
-			if(data.runResult.ecApproachTime < minTimeTaken)
-				minTimeTaken = data.runResult.ecApproachTime;
+			if(parseInt(data.runResult.bruteForceTime) > maxTimeTaken)
+				maxTimeTaken = parseInt(data.runResult.bruteForceTime);
+			if(parseInt(data.runResult.ecApproachTime) > maxTimeTaken)
+				maxTimeTaken = parseInt(data.runResult.ecApproachTime);
+			if(parseInt(data.runResult.bruteForceTime) < minTimeTaken)
+				minTimeTaken = parseInt(data.runResult.bruteForceTime);
+			if(parseInt(data.runResult.ecApproachTime) < minTimeTaken)
+				minTimeTaken = parseInt(data.runResult.ecApproachTime);
 		});
 			console.log(JSON.stringify(json));
 			// console.log(minTimeTaken);
@@ -45,8 +45,8 @@
 			minTimeTaken = Math.floor(minTimeTaken);
 			maxTimeTaken = Math.ceil(maxTimeTaken);
 
-			// console.log(minTimeTaken);
-			// console.log(maxTimeTaken);
+			console.log(minTimeTaken);
+			console.log(maxTimeTaken);
 
 		//STEP2: Parse data
 		//STEP3: Plot data

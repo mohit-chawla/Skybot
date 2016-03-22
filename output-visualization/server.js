@@ -1,3 +1,16 @@
+/*                                                                                                      *           *           * * * *
+// Program name: server.js                                                                        * *       * *         *
+// Program description: Server script to display the results from db                                         *   *   *   *        *
+// Authors: Mohit Chawla <www.mohitchawla.in>, Kriti Singh <kriti96.singh@gmail.com>                 *************************************
+*                                                                                                       *           *      *****
+/                                                                                                       *           *         *
+/                                                                                                       *           *           * * * *
+DEVELOPERS NOTE
+*** the variables bruteForceTime, bruteForceUtility, ecApproachTime, ecApproachUtility are STRINGS, please compute accordingly.
+*/  
+//Program Usage: 
+//node server.js
+
 //Express initializes app to be a funciton handler that is to be supplied to the http server later
 var express = require('express');
 var app = express();
