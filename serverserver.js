@@ -20,7 +20,7 @@ var io = require('socket.io').listen(3013),
 var mongoose  = require('mongoose');
 
 /////////////////// DATABASE CONFIG AND CONNECTION START HERE //////////////////////
-const DATABASE_SAVE_FLAG = true;  //Set this flag to true to enable logging to database
+const DATABASE_SAVE_FLAG = false;  //Set this flag to true to enable logging to database
 
 var dbName = "/scheduling_server";
 

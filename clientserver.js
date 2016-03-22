@@ -5,6 +5,8 @@
 *                                                                                                       *           *      *****
 /                                                                                                       *           *         *
 /                                                                                                       *           *           * * * *
+DEVELOPERS NOTE
+*** if you get error: Error: listen EADDRINUSE      do---> killall -9 node
 */  
 //Program Usage: 
 //node clientserver.js NUMBER_OF_REQUEST_TO_BE_SENT
@@ -90,7 +92,9 @@ client.emit('adminMessage', "glee");
 
   client.on('display results', function (data) {
           // console.log('msg from ', client.id);
-          console.log('RESULTS DISPLAYED! ', data);
+          console.log('RESULTS DISPLAYED for! ', data.msg);
+          console.log('Start index ', data.indexStart);
+          console.log('End index ', data.indexEnd);
           app.get('/', function (req, res) {
             res.sendfile(__dirname + '/index.html');
           });
