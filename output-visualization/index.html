@@ -8,7 +8,12 @@
 	<link href="css/c3.css" rel="stylesheet" type="text/css">
 </head>
 <body>
+	<h2>Analysis time comparison</h2>
 	<div id="performanceGraphElement" style="width:100%; height:600px;">
+		<center><h1>LOADING....</h1></center>
+	</div>
+	<h2>Utilty comparison</h2>
+	<div id="utilityGraphElement" style="width:100%; height:600px;">
 		<center><h1>LOADING....</h1></center>
 	</div>
 	<script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
@@ -21,13 +26,19 @@
 		// console.log(dataFromDB);
 		// var dataFromServer = JSON.parse(dataFromDB);
 			var json = {"bruteForce": [], "ec": []};
-			var maxTimeTaken = Number.NEGATIVE_INFINITY, minTimeTaken = Number.POSITIVE_INFINITY;
+			var loneData = {"fcfsUtilities": []};
+			var maxTimeTaken = Number.NEGATIVE_INFINITY, 
+				minTimeTaken = Number.POSITIVE_INFINITY,
+				maxUtilityObserved = Number.NEGATIVE_INFINITY,
+				minUtilityObserved = Number.POSITIVE_INFINITY;
 
 		dataFromDB.forEach(function(data){
 			console.log(typeof data.runResult.runID);
 			console.log("RunID: %d    numOfRequests: %d",parseInt(data.runResult.runID), parseInt(data.runResult.numOfRequests));
-			json.bruteForce.push({"requests":data.runResult.numOfRequests,"time":data.runResult.bruteForceTime});
-			json.ec.push({"requests":data.runResult.numOfRequests,"time":data.runResult.ecApproachTime});
+			json.bruteForce.push({"requests":data.runResult.numOfRequests,"time":data.runResult.bruteForceTime, "utility":data.runResult.bruteForceUtility});
+			json.ec.push({"requests":data.runResult.numOfRequests,"time":data.runResult.ecApproachTime, "utility":data.runResult.ecApproachUtility});
+			// TODO: change schema tpo add fcfs utilities
+			loneData.fcfsUtilities.push({"requests":data.runResult.numOfRequests, "utility":data.runResult.ecApproachUtility});
 
 			if(parseInt(data.runResult.bruteForceTime) > maxTimeTaken)
 				maxTimeTaken = parseInt(data.runResult.bruteForceTime);
@@ -37,6 +48,21 @@
 				minTimeTaken = parseInt(data.runResult.bruteForceTime);
 			if(parseInt(data.runResult.ecApproachTime) < minTimeTaken)
 				minTimeTaken = parseInt(data.runResult.ecApproachTime);
+
+			if(parseInt(data.runResult.bruteForceUtility) > maxUtilityObserved)
+				maxUtilityObserved = parseInt(data.runResult.bruteForceUtility);
+			if(parseInt(data.runResult.ecApproachUtility) > maxUtilityObserved)
+				maxUtilityObserved = parseInt(data.runResult.ecApproachUtility);
+			// TODO: change schema tpo add fcfs utilities
+			if(parseInt(data.runResult.ecApproachUtility) > maxUtilityObserved)
+				maxUtilityObserved = parseInt(data.runResult.ecApproachUtility);
+			if(parseInt(data.runResult.bruteForceUtility) < minUtilityObserved)
+				minUtilityObserved = parseInt(data.runResult.bruteForceUtility);
+			if(parseInt(data.runResult.ecApproachUtility) < minUtilityObserved)
+				minUtilityObserved = parseInt(data.runResult.ecApproachUtility);
+			// TODO: change schema tpo add fcfs utilities
+			if(parseInt(data.runResult.ecApproachUtility) < minUtilityObserved)
+				minUtilityObserved = parseInt(data.runResult.ecApproachUtility);
 		});
 			console.log(JSON.stringify(json));
 			// console.log(minTimeTaken);
@@ -44,6 +70,9 @@
 
 			minTimeTaken = Math.floor(minTimeTaken);
 			maxTimeTaken = Math.ceil(maxTimeTaken);
+
+			minUtilityObserved = Math.floor(minUtilityObserved);
+			maxUtilityObserved = Math.ceil(maxUtilityObserved);
 
 			console.log(minTimeTaken);
 			console.log(maxTimeTaken);
@@ -73,7 +102,7 @@
 			// "sjf":[{"requests":5,"time":7},{"requests":55,"time":17},{"requests":555,"time":117}]
 			// };
 
-			var numOfStrategies=0, columnsData=[], requestNumberData=[];
+			var numOfStrategies=0, columnsData=[], utilityColumnsData = [], requestNumberData=[];
 			var tempArr=[], noOfSamplingInstances=0;
 			var keysArrayReference = Object.keys(json);
 			// modern browsers allow this, the next line is pure GOLD :)
@@ -88,6 +117,9 @@
 			// console.log(columnsData);
 
 			for(i=0;i<numOfStrategies;i++){
+
+				// adding data for time comparison starts
+
 				while(tempArr.length>0){
 					tempArr.pop();
 				}
@@ -110,9 +142,69 @@
 				// columnsData.push(tempArr);
 				// console.log(columnsData);
 
+				// adding data for time comparison ends
+
+				// adding data for utility comparison starts
+
+				while(tempArr.length>0){
+					tempArr.pop();
+				}
+				noOfSamplingInstances=0;
+				noOfSamplingInstances = json[keysArrayReference[i]].length;
+				// console.log(noOfSamplingInstances);
+				// console.log( typeof keysArrayReference[i]);
+				tempArr.push(keysArrayReference[i]);
+				for(j=0;j<noOfSamplingInstances;j++){
+					// console.log(json[keysArrayReference[i]][j].time);
+					// tempArr[j+1] = json[keysArrayReference[i]][j].time;
+					tempArr.push(json[keysArrayReference[i]][j].utility);
+				}
+				// console.log(tempArr);
+
+				// columnsData = columnsData.slice();
+				// columnsData.push( tempArr );
+				tempArr = [tempArr];
+				utilityColumnsData = $.merge($.merge([], utilityColumnsData), tempArr);
+				// columnsData.push(tempArr);
+				// console.log(columnsData);
+
+				// adding data for utility comparison ends
+
+
+
 			}
+
+
+
+
+
 				// console.log('correct this:');
 				// console.log(columnsData);
+
+
+
+				// adding data for fcfs utility comparison starts
+
+				while(tempArr.length>0){
+					tempArr.pop();
+				}
+				
+				tempArr.push('fcfs');
+				loneData.fcfsUtilities.forEach(function(data){
+					tempArr.push(data.utility);	
+				});
+				
+				// console.log(tempArr);
+
+				// columnsData = columnsData.slice();
+				// columnsData.push( tempArr );
+				tempArr = [tempArr];
+				utilityColumnsData = $.merge($.merge([], utilityColumnsData), tempArr);
+				// columnsData.push(tempArr);
+				// console.log(columnsData);
+
+				// adding data for fcfs utility comparison ends
+
 
 
 				// sampling numbers list
@@ -121,7 +213,7 @@
 				}
 				for(j=0;j<json[keysArrayReference[0]].length;j++){
 					// console.log(json[keysArrayReference[i]][j].time);
-					tempArr[j] =    json[keysArrayReference[0]][j].requests;
+					tempArr[j] =  json[keysArrayReference[0]][j].requests;
 				}
 				requestNumberData = tempArr;
 				// console.log(requestNumberData);
@@ -188,6 +280,29 @@
 
 			// $("#performanceGraphElement").empty();
 			// $("#performanceGraphElement").append(performanceGraph.element);
+
+			$("#utilityGraphElement").empty();
+			var utilityGraph = c3.generate({
+				bindto:'#utilityGraphElement',
+			    data: {
+			        // columns: [
+			        //     ['fcfs', 30, 200, 100, 400, 150, 250],
+			        //     ['bruteForce', 130, 100, 140, 200, 150, 50],
+			        //     ['ec', 130, -150, 200, 300, -200, 100]
+			        // ],
+			        columns: utilityColumnsData,
+			        type: 'bar'
+			    },
+			    bar: {
+			        width: {
+			            ratio: 0.5 // this makes bar width 50% of length between ticks
+			        }
+			        // or
+			        //width: 100 // this makes bar width 100px
+			    }
+			});
+
+
 			
 	});
 	</script>
