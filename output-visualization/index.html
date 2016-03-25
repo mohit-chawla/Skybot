@@ -38,7 +38,7 @@
 			json.bruteForce.push({"requests":data.runResult.numOfRequests,"time":data.runResult.bruteForceTime, "utility":data.runResult.bruteForceUtility});
 			json.ec.push({"requests":data.runResult.numOfRequests,"time":data.runResult.ecApproachTime, "utility":data.runResult.ecApproachUtility});
 			// TODO: change schema tpo add fcfs utilities
-			loneData.fcfsUtilities.push({"requests":data.runResult.numOfRequests, "utility":data.runResult.ecApproachUtility});
+			loneData.fcfsUtilities.push({"requests":data.runResult.numOfRequests, "utility":data.runResult.fcfsUtility});
 
 			if(parseInt(data.runResult.bruteForceTime) > maxTimeTaken)
 				maxTimeTaken = parseInt(data.runResult.bruteForceTime);
@@ -54,15 +54,15 @@
 			if(parseInt(data.runResult.ecApproachUtility) > maxUtilityObserved)
 				maxUtilityObserved = parseInt(data.runResult.ecApproachUtility);
 			// TODO: change schema tpo add fcfs utilities
-			if(parseInt(data.runResult.ecApproachUtility) > maxUtilityObserved)
-				maxUtilityObserved = parseInt(data.runResult.ecApproachUtility);
+			if(parseInt(data.runResult.fcfsUtility) > maxUtilityObserved)
+				maxUtilityObserved = parseInt(data.runResult.fcfsUtility);
 			if(parseInt(data.runResult.bruteForceUtility) < minUtilityObserved)
 				minUtilityObserved = parseInt(data.runResult.bruteForceUtility);
 			if(parseInt(data.runResult.ecApproachUtility) < minUtilityObserved)
 				minUtilityObserved = parseInt(data.runResult.ecApproachUtility);
 			// TODO: change schema tpo add fcfs utilities
-			if(parseInt(data.runResult.ecApproachUtility) < minUtilityObserved)
-				minUtilityObserved = parseInt(data.runResult.ecApproachUtility);
+			if(parseInt(data.runResult.fcfsUtility) < minUtilityObserved)
+				minUtilityObserved = parseInt(data.runResult.fcfsUtility);
 		});
 			console.log(JSON.stringify(json));
 			// console.log(minTimeTaken);
@@ -299,6 +299,11 @@
 			        }
 			        // or
 			        //width: 100 // this makes bar width 100px
+			    },
+			    axis:{
+			    	y: {
+			    	    center: 0
+			    	  }
 			    }
 			});
 

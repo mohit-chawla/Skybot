@@ -48,10 +48,13 @@ mongoose.connect(link_to_db+dbName, function(err){
 
 /////////////////////////// DATABASE SCHEMA/MODEL STARTS HERE //////////////////////////
 
+
+
 var dbSchema = mongoose.Schema({
   runResult: {
     runID: {type: String, default: null}, //used to differentiate different test-runs of the program, assigned to PROGRAM_RUN_ID
     numOfRequests:{type:String, default:null},     //
+    fcfsUtility:{type: String, default: null},     //Answer by fcfs approach
     bruteForceTime:{type:String, default:null},     //Time taken by brute force
     bruteForceUtility:{type:String, default:null},  //Best answer by brute force 
     ecApproachTime:{type: String, default: null},   //Time taken by ec approach
@@ -929,12 +932,19 @@ io.sockets.on('connection', function(socket) {
             var finalResultToDatabase = new researchModel({ 
                 runResult:{
                     runID : PROGRAM_RUN_ID, 
+
                     numOfRequests: requestQueueLength, 
+                    fcfsUtility: analyzed_fcfsUtilityValue,
+                    queueProcessingTime: anayzed_bruteForceSegmentProcessingTimeSpent,
+                    
                     bruteForceTime: analyzed_bruteForceTimeInMs,
                     bruteForceUtility: analyzed_bruteForceBestSolution, 
+                    
                     ecApproachTime: analyzed_ecTimeInMs, 
                     ecApproachUtility: analyzed_ecBestSolution
                 }
+
+
             });
 
             finalResultToDatabase.save(function(err){
