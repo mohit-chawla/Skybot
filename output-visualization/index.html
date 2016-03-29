@@ -211,7 +211,8 @@
 				tempArr = [tempArr];
 				utilityColumnsData = $.merge($.merge([], utilityColumnsData), tempArr);
 				// columnsData.push(tempArr);
-				console.log(utilityColumnsData);
+				console.log("Printing utility col data");
+				console.log(JSON.stringify(utilityColumnsData));
 
 				// adding data for fcfs utility comparison ends
 
@@ -274,10 +275,10 @@
 			            // show: true,
 			            type: 'category',
 			            categories: requestNumberData,
-			            label: 'Number of requests',
-			            tick: {
-			                values: requestNumberData
-			            }
+			            label: 'Number of requests'
+			            // tick: {
+			            //     values: requestNumberData
+			            // }
 
 			            }
 			    }
@@ -328,10 +329,15 @@
 			    },
 			    axis: {
 			      x: {
-			        label: {
-			           text: 'Number of requests',
-			           position: 'outer-center',
-			        }
+
+
+			      	// show: true,
+			      	type: 'category',
+			      	categories: requestNumberData,
+			      	label: 'Number of requests'
+			      	// tick: {
+			      	//     values: requestNumberData
+			      	// }
 			      },
 			      y: {
 			      	label: 'utility value (utils)'
