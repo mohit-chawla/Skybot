@@ -6,12 +6,22 @@
 	<script src="js/d3.min.js" charset="utf-8"></script> 
 	<script src="js/c3.min.js"></script>
 	<link href="css/c3.css" rel="stylesheet" type="text/css">
+
+	<style type="text/css">
+		.legend div {
+		    width: 33.333333%;
+		    text-align: center;
+		    cursor: pointer;
+		    color: white;
+		}
+	</style>
 </head>
 <body>
 	<h2>Analysis time comparison</h2>
 	<div id="performanceGraphElement" style="width:100%; height:600px;">
 		<center><h1>LOADING....</h1></center>
 	</div>
+	<br><br>
 	<h2>Utilty comparison</h2>
 	<div id="utilityGraphElement" style="width:100%; height:600px;">
 		<center><h1>LOADING....</h1></center>
@@ -201,9 +211,21 @@
 				tempArr = [tempArr];
 				utilityColumnsData = $.merge($.merge([], utilityColumnsData), tempArr);
 				// columnsData.push(tempArr);
-				// console.log(columnsData);
+				console.log(utilityColumnsData);
 
 				// adding data for fcfs utility comparison ends
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -216,9 +238,9 @@
 					tempArr[j] =  json[keysArrayReference[0]][j].requests;
 				}
 				requestNumberData = tempArr;
-				// console.log(requestNumberData);
+				console.log("req num data ",requestNumberData);
 
-			var performanceGraph = c3.generate({
+			performanceGraph = c3.generate({
 				bindto:'#performanceGraphElement',
 			    data: {
 			    	// x:'x',
@@ -230,7 +252,9 @@
 			        //     // ,['data2', 50, 20, 10, 40, 15, 25]
 			        //     // ,['data3', 130, 150, 200, 300, 200, 100]
 			        // ]
-			        columns : columnsData
+			        columns : columnsData,
+			        // labels: true
+
 			    }
 			    // if a point doesn't have a value then connect the previous point to the next point
 			    ,line: {
@@ -282,7 +306,7 @@
 			// $("#performanceGraphElement").append(performanceGraph.element);
 
 			$("#utilityGraphElement").empty();
-			var utilityGraph = c3.generate({
+			utilityGraph = c3.generate({
 				bindto:'#utilityGraphElement',
 			    data: {
 			        // columns: [
@@ -291,6 +315,8 @@
 			        //     ['ec', 130, -150, 200, 300, -200, 100]
 			        // ],
 			        columns: utilityColumnsData,
+
+			        labels: true,
 			        type: 'bar'
 			    },
 			    bar: {
@@ -300,16 +326,36 @@
 			        // or
 			        //width: 100 // this makes bar width 100px
 			    },
-			    axis:{
-			    	y: {
-			    	    center: 0
-			    	  }
+			    axis: {
+			      x: {
+			        label: {
+			           text: 'Number of requests',
+			           position: 'outer-center',
+			        }
+			      },
+			      y: {
+			      	label: 'utility value (utils)'
+			      }
 			    }
+			    
 			});
 
 
-			
-	});
+	});	 // socket.on ends
+	
+	
+
+
+$(document).on('load', function(){
+		// select the x axis
+	d3.select(utilityGraph.element).select('.' + c3.chart.internal.fn.CLASS.axisX).transition()
+	// and translate it to the y = 0 position
+	    .attr('transform', "translate(" + 0 + "," + utilityGraph.internal.y(0) + ")");
+
+});
+
+
+
 	</script>
 <script type="text/javascript">
 	
