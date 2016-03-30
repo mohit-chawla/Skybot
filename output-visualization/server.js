@@ -98,9 +98,14 @@ io.on('connection', function(socket){
       socket.emit("data_from_db_ready", foundData);
 
     }
-  });
+  }).sort( { "runResult.numOfRequests": 1 } );
 });
 
+// sort by function
+// but arg to sort must be an object or a string
+// .sort( function(doc1, doc2) { 
+//     return parseInt(doc1.runResult.numOfRequests)  parseInt(doc2.runResult.numOfRequests); 
+//   });
 
 //server listening
 server.listen(server_port, server_ip_address, function(){

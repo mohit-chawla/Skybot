@@ -6,6 +6,9 @@
 	<script src="js/d3.min.js" charset="utf-8"></script> 
 	<script src="js/c3.min.js"></script>
 	<link href="css/c3.css" rel="stylesheet" type="text/css">
+	<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+	<script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
 
 	<style type="text/css">
 		.legend div {
@@ -17,15 +20,37 @@
 	</style>
 </head>
 <body>
-	<h2>Analysis time comparison</h2>
-	<div id="performanceGraphElement" style="width:100%; height:600px;">
+
+<div class="container-fluid">
+	
+	<h2>Analysis time comparison (complete data)</h2>
+	<div class="col-md-12" id="performanceGraphElement" style="height:600px;">
 		<center><h1>LOADING....</h1></center>
 	</div>
+
 	<br><br>
-	<h2>Utilty comparison</h2>
-	<div id="utilityGraphElement" style="width:100%; height:600px;">
+
+
+	<h2>Utility comparison (complete data)/</h2>
+	<div class="col-md-12" id="utilityGraphElement" style="height:600px;">
 		<center><h1>LOADING....</h1></center>
 	</div>
+
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
 	<script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
 	<script src="http://code.jquery.com/jquery-1.11.1.js"></script>
 	<script type="text/javascript">
@@ -334,7 +359,7 @@
 			      	// show: true,
 			      	type: 'category',
 			      	categories: requestNumberData,
-			      	label: 'Number of requests'
+			      	label: 'Number of requests',
 			      	// tick: {
 			      	//     values: requestNumberData
 			      	// }
@@ -347,24 +372,39 @@
 			});
 
 
+			// attach analysis-time graphs for smaller values starts
+			max_n_size = 20, num_of_small_samples = 0;
+			console.log("checking number of tests for n < ", max_n_size);
+			
+
+			// attach analysis-time graphs for smaller values ends
+
+
 	});	 // socket.on ends
 	
 	
 
 
-$(document).on('load', function(){
+// $(document).on('load', function(){
+// 		// select the x axis
+// 	d3.select(utilityGraph.element).select('.' + c3.chart.internal.fn.CLASS.axisX).transition()
+// 	// and translate it to the y = 0 position
+// 	    .attr('transform', "translate(" + 50 + "," + utilityGraph.internal.y(-500) + ")");
+
+// });
+
+
+// the point is that every time the chart is edrawn, the axis should be translated
+setTimeout(function(){
 		// select the x axis
 	d3.select(utilityGraph.element).select('.' + c3.chart.internal.fn.CLASS.axisX).transition()
 	// and translate it to the y = 0 position
 	    .attr('transform', "translate(" + 0 + "," + utilityGraph.internal.y(0) + ")");
-
-});
+}, 3000);
 
 
 
 	</script>
-<script type="text/javascript">
-	
-</script>
+
 </body>
 </html>
