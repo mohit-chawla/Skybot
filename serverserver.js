@@ -54,11 +54,16 @@ var dbSchema = mongoose.Schema({
   runResult: {
     runID: {type: String, default: null}, //used to differentiate different test-runs of the program, assigned to PROGRAM_RUN_ID
     numOfRequests:{type:String, default:null},     //
+    
     fcfsUtility:{type: String, default: null},     //Answer by fcfs approach
+    numOfGenerations:{type:Number, default:0},     // number of generations
+    
     bruteForceTime:{type:String, default:null},     //Time taken by brute force
     bruteForceUtility:{type:String, default:null},  //Best answer by brute force 
+    
     ecApproachTime:{type: String, default: null},   //Time taken by ec approach
     ecApproachUtility:{type: String, default: null},//Best answer by ec approach
+    
     timeStamp: {type: Date, default:null}
   }
 });
@@ -934,6 +939,8 @@ io.sockets.on('connection', function(socket) {
                     runID : PROGRAM_RUN_ID, 
 
                     numOfRequests: requestQueueLength, 
+                    numOfGenerations: NUMBER_OF_GENERATIONS, 
+
                     fcfsUtility: analyzed_fcfsUtilityValue,
                     queueProcessingTime: anayzed_bruteForceSegmentProcessingTimeSpent,
                     
@@ -942,6 +949,7 @@ io.sockets.on('connection', function(socket) {
                     
                     ecApproachTime: analyzed_ecTimeInMs, 
                     ecApproachUtility: analyzed_ecBestSolution
+
                 }
 
 

@@ -57,12 +57,22 @@ app.use(express.static(__dirname+'/public'));
 var dbSchema = mongoose.Schema({
   runResult: {
     runID: {type: String, default: null}, //unique id to determine the "run" of algorithm {run: one loop of server processing}
-    numOfRequests:{type:String, default:null},     //
+    numOfRequests:{type:String, default:null},     // number of requests queued
+    
+    queueProcessingTime:{type:Number, default:0},
+
+    fcfsUtility:{type: String, default: null},     //Answer by fcfs approach
+    numOfGenerations:{type:Number, default:0},     // number of generations
+    
     bruteForceTime:{type:String, default:null},     //Time taken by brute force
     bruteForceUtility:{type:String, default:null},  //Best answer by brute force 
+    
     ecApproachTime:{type: String, default: null},   //Time taken by ec approach
     ecApproachUtility:{type: String, default: null},//Best answer by ec approach
+    
     timeStamp: {type: Date, default:null}
+
+
   }
 });
 
@@ -98,7 +108,7 @@ io.on('connection', function(socket){
       socket.emit("data_from_db_ready", foundData);
 
     }
-  }).sort( { "runResult.numOfRequests": 1 } );
+  });
 });
 
 // sort by function
@@ -106,6 +116,9 @@ io.on('connection', function(socket){
 // .sort( function(doc1, doc2) { 
 //     return parseInt(doc1.runResult.numOfRequests)  parseInt(doc2.runResult.numOfRequests); 
 //   });
+
+// OR
+// .sort( { "runResult.numOfRequests": 1 } )
 
 //server listening
 server.listen(server_port, server_ip_address, function(){

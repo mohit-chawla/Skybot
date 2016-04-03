@@ -8,6 +8,15 @@
 	<link href="css/c3.css" rel="stylesheet" type="text/css">
 	<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" type="text/css">
 	<script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+	
+
+	<!-- For 3d visualisation starts -->
+
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.15.1/vis.min.js"></script>
+	
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.15.1/vis.min.css" rel="stylesheet" type="text/css">
+
+	<!-- For 3d visualisation ends -->
 
 
 	<style type="text/css">
@@ -37,10 +46,15 @@
 	</div>
 
 
+	<div id="visualization"></div>
+
 </div>
 
 
 
+<script type="text/javascript">
+   
+</script>
 
 
 
@@ -60,44 +74,92 @@
 		//STEP1: Retreive data
 		// console.log(dataFromDB);
 		// var dataFromServer = JSON.parse(dataFromDB);
+
+
+		function ddraw3dVis(dataFromDB){
+				// Create and populate a data table.
+				var data = new vis.DataSet();
+				// create some nice looking data with sin/cos
+				var counter = 0;
+				var steps = 50;  // number of datapoints will be steps*steps ---- 1
+				var axisMax = 314;
+				var axisStep = axisMax / steps;
+				// x: requests
+				// y: generations
+				// z: time taken
+
+
+
+				for (var x = 0; x < axisMax; x+=axisStep) {
+				    for (var y = 0; y < axisMax; y+=axisStep) {
+				        var value = (Math.sin(x/50) * Math.cos(y/50) * 50 + 50);
+				        data.add({id:counter++,x:x,y:y,z:value,style:value});
+				    }
+				}
+
+				// specify options
+				var options = {
+				    width:  '500px',
+				    height: '552px',
+				    style: 'surface',
+				    showPerspective: true,
+				    showGrid: true,
+				    showShadow: false,
+				    keepAspectRatio: true,
+				    verticalRatio: 0.5
+				};
+
+				// Instantiate our graph object.
+				var container = document.getElementById('visualization');
+				var graph3d = new vis.Graph3d(container, data, options);
+		}
+
+		ddraw3dVis(dataFromDB);
+
+
 			var json = {"bruteForce": [], "ec": []};
 			var loneData = {"fcfsUtilities": []};
 			var maxTimeTaken = Number.NEGATIVE_INFINITY, 
 				minTimeTaken = Number.POSITIVE_INFINITY,
 				maxUtilityObserved = Number.NEGATIVE_INFINITY,
-				minUtilityObserved = Number.POSITIVE_INFINITY;
+				minUtilityObserved = Number.POSITIVE_INFINITY,
+				generationsForLineGraph = 3; // currently db has data at [3, 6] generations
 
 		dataFromDB.forEach(function(data){
-			console.log(typeof data.runResult.runID);
-			console.log("RunID: %d    numOfRequests: %d",parseInt(data.runResult.runID), parseInt(data.runResult.numOfRequests));
-			json.bruteForce.push({"requests":data.runResult.numOfRequests,"time":data.runResult.bruteForceTime, "utility":data.runResult.bruteForceUtility});
-			json.ec.push({"requests":data.runResult.numOfRequests,"time":data.runResult.ecApproachTime, "utility":data.runResult.ecApproachUtility});
-			// TODO: change schema tpo add fcfs utilities
-			loneData.fcfsUtilities.push({"requests":data.runResult.numOfRequests, "utility":data.runResult.fcfsUtility});
+			if(parseInt(data.runResult.numOfGenerations) == generationsForLineGraph){
+				console.log(typeof data.runResult.runID);
+				console.log("RunID: %d    numOfRequests: %d",parseInt(data.runResult.runID), parseInt(data.runResult.numOfRequests));
+				json.bruteForce.push({"requests":data.runResult.numOfRequests,"time":data.runResult.bruteForceTime, "utility":data.runResult.bruteForceUtility});
+				json.ec.push({"requests":data.runResult.numOfRequests,"time":data.runResult.ecApproachTime, "utility":data.runResult.ecApproachUtility});
+				// TODO: change schema tpo add fcfs utilities
+				loneData.fcfsUtilities.push({"requests":data.runResult.numOfRequests, "utility":data.runResult.fcfsUtility});
 
-			if(parseInt(data.runResult.bruteForceTime) > maxTimeTaken)
-				maxTimeTaken = parseInt(data.runResult.bruteForceTime);
-			if(parseInt(data.runResult.ecApproachTime) > maxTimeTaken)
-				maxTimeTaken = parseInt(data.runResult.ecApproachTime);
-			if(parseInt(data.runResult.bruteForceTime) < minTimeTaken)
-				minTimeTaken = parseInt(data.runResult.bruteForceTime);
-			if(parseInt(data.runResult.ecApproachTime) < minTimeTaken)
-				minTimeTaken = parseInt(data.runResult.ecApproachTime);
+				if(parseInt(data.runResult.bruteForceTime) > maxTimeTaken)
+					maxTimeTaken = parseInt(data.runResult.bruteForceTime);
+				if(parseInt(data.runResult.ecApproachTime) > maxTimeTaken)
+					maxTimeTaken = parseInt(data.runResult.ecApproachTime);
+				if(parseInt(data.runResult.bruteForceTime) < minTimeTaken)
+					minTimeTaken = parseInt(data.runResult.bruteForceTime);
+				if(parseInt(data.runResult.ecApproachTime) < minTimeTaken)
+					minTimeTaken = parseInt(data.runResult.ecApproachTime);
 
-			if(parseInt(data.runResult.bruteForceUtility) > maxUtilityObserved)
-				maxUtilityObserved = parseInt(data.runResult.bruteForceUtility);
-			if(parseInt(data.runResult.ecApproachUtility) > maxUtilityObserved)
-				maxUtilityObserved = parseInt(data.runResult.ecApproachUtility);
-			// TODO: change schema tpo add fcfs utilities
-			if(parseInt(data.runResult.fcfsUtility) > maxUtilityObserved)
-				maxUtilityObserved = parseInt(data.runResult.fcfsUtility);
-			if(parseInt(data.runResult.bruteForceUtility) < minUtilityObserved)
-				minUtilityObserved = parseInt(data.runResult.bruteForceUtility);
-			if(parseInt(data.runResult.ecApproachUtility) < minUtilityObserved)
-				minUtilityObserved = parseInt(data.runResult.ecApproachUtility);
-			// TODO: change schema tpo add fcfs utilities
-			if(parseInt(data.runResult.fcfsUtility) < minUtilityObserved)
-				minUtilityObserved = parseInt(data.runResult.fcfsUtility);
+				if(parseInt(data.runResult.bruteForceUtility) > maxUtilityObserved)
+					maxUtilityObserved = parseInt(data.runResult.bruteForceUtility);
+				if(parseInt(data.runResult.ecApproachUtility) > maxUtilityObserved)
+					maxUtilityObserved = parseInt(data.runResult.ecApproachUtility);
+				// TODO: change schema tpo add fcfs utilities
+				if(parseInt(data.runResult.fcfsUtility) > maxUtilityObserved)
+					maxUtilityObserved = parseInt(data.runResult.fcfsUtility);
+				if(parseInt(data.runResult.bruteForceUtility) < minUtilityObserved)
+					minUtilityObserved = parseInt(data.runResult.bruteForceUtility);
+				if(parseInt(data.runResult.ecApproachUtility) < minUtilityObserved)
+					minUtilityObserved = parseInt(data.runResult.ecApproachUtility);
+				// TODO: change schema tpo add fcfs utilities
+				if(parseInt(data.runResult.fcfsUtility) < minUtilityObserved)
+					minUtilityObserved = parseInt(data.runResult.fcfsUtility);
+				
+				// .
+			}
 		});
 			console.log(JSON.stringify(json));
 			// console.log(minTimeTaken);
