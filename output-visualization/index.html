@@ -46,7 +46,7 @@
 	</div>
 
 
-	<div id="visualization"></div>
+	<div id="visualization" class="col-md-offset-1"></div>
 
 </div>
 
@@ -80,33 +80,47 @@
 				// Create and populate a data table.
 				var data = new vis.DataSet();
 				// create some nice looking data with sin/cos
-				var counter = 0;
-				var steps = 50;  // number of datapoints will be steps*steps ---- 1
-				var axisMax = 314;
-				var axisStep = axisMax / steps;
+				// var counter = 0;
+				// var steps = 50;  // number of datapoints will be steps*steps ---- 1
+				// var axisMax = 314;
+				// var axisStep = axisMax / steps;
+
+				// for (var x = 0; x < axisMax; x+=axisStep) {
+				//     for (var y = 0; y < axisMax; y+=axisStep) {
+				//         var value = (Math.sin(x/50) * Math.cos(y/50) * 50 + 50);
+				//         data.add({id:counter++,x:x,y:y,z:value,style:value});
+				//     }
+				// }
+				var n_requests, 
+					n_generations, 
+					time_taken,
+					counter = 0;
+				dataFromDB.forEach(function(d){
+
+					n_requests = parseInt(d.runResult.numOfRequests);
+					n_generations = parseInt(d.runResult.numOfGenerations);
+					time_taken = parseInt(d.runResult.ecApproachTime);
+					data.add({id:counter++,x:n_requests,y:n_generations,z:time_taken,style:time_taken});
+				});
+
+
 				// x: requests
 				// y: generations
 				// z: time taken
 
-
-
-				for (var x = 0; x < axisMax; x+=axisStep) {
-				    for (var y = 0; y < axisMax; y+=axisStep) {
-				        var value = (Math.sin(x/50) * Math.cos(y/50) * 50 + 50);
-				        data.add({id:counter++,x:x,y:y,z:value,style:value});
-				    }
-				}
-
 				// specify options
 				var options = {
-				    width:  '500px',
-				    height: '552px',
+				    width:  '800px',
+				    height: '850px',
 				    style: 'surface',
 				    showPerspective: true,
 				    showGrid: true,
 				    showShadow: false,
 				    keepAspectRatio: true,
-				    verticalRatio: 0.5
+				    verticalRatio: 0.5,
+				    xLabel: 'requests',
+				    yLabel: 'generations',
+				    zLabel: 'ec analysis time'
 				};
 
 				// Instantiate our graph object.
