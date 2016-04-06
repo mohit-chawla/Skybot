@@ -33,11 +33,12 @@
 <div class="container-fluid">
 	
 	<h2>Analysis time comparison (complete data)</h2>
+	<br><br>
 	<div class="col-md-12" id="performanceGraphElement" style="height:600px;">
 		<center><h1>LOADING....</h1></center>
 	</div>
 
-	<br><br>
+	<br><br><br><br><br><br><br><br><br><br>
 
 
 	<h2>Utility comparison (complete data)/</h2>
@@ -76,7 +77,7 @@
 		// var dataFromServer = JSON.parse(dataFromDB);
 
 
-		function ddraw3dVis(dataFromDB){
+		function draw3dVis(dataFromDB){
 				// Create and populate a data table.
 				var data = new vis.DataSet();
 				// create some nice looking data with sin/cos
@@ -128,7 +129,7 @@
 				var graph3d = new vis.Graph3d(container, data, options);
 		}
 
-		ddraw3dVis(dataFromDB);
+		draw3dVis(dataFromDB);
 
 
 			var json = {"bruteForce": [], "ec": []};

@@ -95,6 +95,9 @@ var researchModel = mongoose.model('researchModel', dbSchema, 'researchCollectio
 app.get('/', function(req, res){
   res.sendFile(__dirname + '/index.html');
 });
+app.get('/index-break', function(req, res){
+  res.sendFile(__dirname + '/index-break.html');
+});
 io.on('connection', function(socket){
 
   var get_data_from_db = researchModel.find({}, function(err,foundData){
