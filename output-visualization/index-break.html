@@ -424,7 +424,7 @@
 			    },
 			    bar: {
 			        width: {
-			            ratio: 0.5 // this makes bar width 50% of length between ticks
+			            ratio: 0.9 // this makes bar width 50% of length between ticks
 			        }
 			        // or
 			        //width: 100 // this makes bar width 100px
@@ -436,13 +436,23 @@
 			      	// show: true,
 			      	type: 'category',
 			      	categories: requestNumberData,
-			      	label: 'Number of requests',
+			      	label: {
+			      		text:'Number of requests',
+			      	position: 'outer-right'
+			      	}
 			      	// tick: {
 			      	//     values: requestNumberData
 			      	// }
 			      },
 			      y: {
-			      	label: 'utility value (utils)'
+			      	label: {
+			      		text:'utility value (utils)',
+			      	position: 'outer-center'
+			      	}
+
+
+
+			      	
 			      }
 			    }
 			    
@@ -474,9 +484,13 @@
 // the point is that every time the chart is edrawn, the axis should be translated
 setTimeout(function(){
 		// select the x axis
+		$('#utilityGraphElement').attr('padding-top', '4px');
+		$('#performanceGraphElement').attr('padding-top', '2px');
 	d3.select(utilityGraph.element).select('.' + c3.chart.internal.fn.CLASS.axisX).transition()
 	// and translate it to the y = 0 position
 	    .attr('transform', "translate(" + 0 + "," + utilityGraph.internal.y(0) + ")");
+	$('.c3 svg .tick text').attr('font-size', '18px');
+	$('.c3-texts text').attr('font-weight', '900');
 }, 3000);
 
 
