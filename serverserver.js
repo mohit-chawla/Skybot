@@ -53,7 +53,7 @@ mongoose.connect(link_to_db+dbName, function(err){
 var dbSchema = mongoose.Schema({
   runResult: {
     runID: {type: String, default: null}, //used to differentiate different test-runs of the program, assigned to PROGRAM_RUN_ID
-    numOfRequests:{type:String, default:null},     //
+    numOfRequests:{type:Number, default:null},     //
     
     fcfsUtility:{type: String, default: null},     //Answer by fcfs approach
     numOfGenerations:{type:Number, default:0},     // number of generations
