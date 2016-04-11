@@ -111,7 +111,7 @@ io.on('connection', function(socket){
       socket.emit("data_from_db_ready", foundData);
 
     }
-  });
+  }).sort( { "runResult.numOfRequests": 1 } );
 });
 
 // sort by function
