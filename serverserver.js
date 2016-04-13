@@ -107,8 +107,8 @@ const ERR_NO_MEM = -2
 // var PROCESSING_TIME_OF_REQUESTS = 5;
 
 var PROCESSING_TIME_OF_REQUESTS = {
-  "t1":10,
-  "t2":5
+  "t1":1,
+  "t2":2
 };
 
 
