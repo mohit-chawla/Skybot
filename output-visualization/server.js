@@ -98,6 +98,9 @@ app.get('/', function(req, res){
 app.get('/index-break', function(req, res){
   res.sendFile(__dirname + '/index-break.html');
 });
+app.get('/tooltip', function(req, res){
+  res.sendFile(__dirname + '/tooltip.html');
+});
 io.on('connection', function(socket){
 
   var get_data_from_db = researchModel.find({}, function(err,foundData){

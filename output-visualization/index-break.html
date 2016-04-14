@@ -26,6 +26,24 @@
 		    cursor: pointer;
 		    color: white;
 		}
+		.c3-line {
+		  stroke-width: 5px;
+		}
+		#performanceGraph{
+			padding:20px;
+		}
+		.c3 svg g g.c3-axis.c3-axis-x {
+		font: 17px sans-serif;
+		font-weight: bold;
+		}
+		.c3 svg g g.c3-axis.c3-axis-y {
+		font: 17px sans-serif;
+		font-weight: bold;
+		}
+		/*.c3-text{
+			font-size: 20px
+		}*/
+
 	</style>
 </head>
 <body>
@@ -93,7 +111,7 @@
 	function roundUptoTwo(num){
 		var ans =  Math.round(num*100);
 		ans = ans/100;
-		console.log("recieved"+num+"returnign"+ans);
+		// console.log("recieved"+num+"returnign"+ans);
 		return ans.toString();
 	}
 
@@ -443,6 +461,17 @@
 
 			performanceGraph = c3.generate({
 				bindto:'#performanceGraphElement',
+				point: {
+				    r: 8,
+				  },
+				  padding: {
+				    left: 100,
+				    top:20,
+				    bottom:100,
+				  },
+				  legend:{
+				  	position:'inset'
+				  },
 			    data: {
 			    	// x:'x',
 			        // columns: [
@@ -463,8 +492,14 @@
 			    }
 			    ,axis: {
 			         y: {
-			         	label: 'Time taken (ms)',
-		             	// tick: {
+			         	label: {
+			         		text: 'Time taken (ms)',
+			         		position: 'inner-bottom',
+			         		padding:{
+			         			left:100
+			         		}
+		             	
+			         	},// tick: {
 		              //   	values: [0,1,5,10,20,40,60,80,100,120,140]
 		              //   }
 		                max: maxTimeTaken,
@@ -476,7 +511,14 @@
 			            type: 'category',
 			            // categories: requestNumberData,
 			            categories: requestsTestedFor,
-			            label: 'Number of requests'
+			            label: {
+			            	text: 'Number of requests',
+			            	position: 'outer-center'
+				            // padding:{
+				            // 	top:100
+				            // }
+	
+			            }
 			            // tick: {
 			            //     values: requestNumberData
 			            // }
@@ -488,6 +530,10 @@
 			
 			performanceGraphSmall = c3.generate({
 				bindto:'#performanceGraphElementSmall',
+				point: {
+				    r: 8,
+				  },
+
 			    data: {
 			    	// x:'x',
 			        // columns: [
@@ -533,6 +579,9 @@
 
 			performanceGraphLarge = c3.generate({
 				bindto:'#performanceGraphElementLarge',
+				point: {
+				    r: 8,
+				  },
 			    data: {
 			    	// x:'x',
 			        // columns: [
@@ -600,6 +649,10 @@
 			$("#utilityGraphElement").empty();
 			utilityGraph = c3.generate({
 				bindto:'#utilityGraphElement',
+				padding:{
+					top:100,
+					left:80
+				},
 			    data: {
 			        // columns: [
 			        //     ['fcfs', 30, 200, 100, 400, 150, 250],
@@ -628,7 +681,7 @@
 			      	categories: requestsTestedFor,
 			      	label: {
 			      		text:'Number of requests',
-			      	position: 'outer-right'
+			      		// position: 'outer-right'
 			      	}
 			      	// tick: {
 			      	//     values: requestNumberData
@@ -637,7 +690,7 @@
 			      y: {
 			      	label: {
 			      		text:'utility value (utils)',
-			      	position: 'outer-center'
+			      		position: 'inner-bottom'
 			      	}
 
 
@@ -730,7 +783,7 @@
 			      	categories: requestsTestedForLargeUtility,
 			      	label: {
 			      		text:'Number of requests',
-			      	position: 'outer-right'
+			      		position: 'outer-left'
 			      	}
 			      	// tick: {
 			      	//     values: requestNumberData
@@ -739,7 +792,7 @@
 			      y: {
 			      	label: {
 			      		text:'utility value (utils)',
-			      	position: 'outer-center'
+			      		position: 'outer-center'
 			      	}
 
 
@@ -789,11 +842,14 @@ setTimeout(function(){
 	d3.select(utilityGraphSmall.element).select('.' + c3.chart.internal.fn.CLASS.axisX).transition()
 	// and translate it to the y = 0 position
 	    .attr('transform', "translate(" + 0 + "," + utilityGraph.internal.y(0) + ")");
-	$('.c3 svg .tick text').attr('font-size', '18px');
-	$('.c3-texts text').attr('font-weight', '900');
-	$('#utilityGraphElementLarge .c3-chart-texts text').attr('font-size', '15px');
-	$('#utilityGraphElementSmall .c3-chart-texts text').attr('font-size', '15px');
+	// $('.c3 svg .tick text').attr('font-size', '20px');
+	// $('.c3-texts text').attr('font-weight', '900');
+	// $('#performanceGraphElement .c3-chart-texts text').attr('font-size', '10px');
+	// $('#utilityGraphElementLarge .c3-chart-texts text').attr('font-size', '20px');
+	// $('#utilityGraphElementSmall .c3-chart-texts text').attr('font-size', '20px');
 }, 3000);
+
+	performanceGraph.tooltip.show({x:2});
 
 	</script>
 
