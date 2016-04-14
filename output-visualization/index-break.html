@@ -90,6 +90,13 @@
 	<script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
 	<script src="http://code.jquery.com/jquery-1.11.1.js"></script>
 	<script type="text/javascript">
+	function roundUptoTwo(num){
+		var ans =  Math.round(num*100);
+		ans = ans/100;
+		console.log("recieved"+num+"returnign"+ans);
+		return ans.toString();
+	}
+
 	var socket  = io();
 
 	socket.on('data_from_db_ready', function(dataFromDB){
@@ -118,7 +125,6 @@
 					time_taken,
 					counter = 0;
 				dataFromDB.forEach(function(d){
-
 					n_requests = parseInt(d.runResult.numOfRequests);
 					n_generations = parseInt(d.runResult.numOfGenerations);
 					time_taken = parseInt(d.runResult.ecApproachTime);
@@ -168,11 +174,12 @@
 		dataFromDB.forEach(function(data){
 			if(parseInt(data.runResult.numOfGenerations) == generationsForLineGraph){ // display line graph for values collected for num of gen = generationsForLineGraph
 				console.log(typeof data.runResult.runID);
+				console.log("mohit test here"+ typeof data.runResult.bruteForceTime);
 				console.log("RunID: %d    numOfRequests: %d",parseInt(data.runResult.runID), parseInt(data.runResult.numOfRequests));
-				json.bruteForce.push({"requests":data.runResult.numOfRequests,"time":data.runResult.bruteForceTime, "utility":data.runResult.bruteForceUtility});
-				json.ec.push({"requests":data.runResult.numOfRequests,"time":data.runResult.ecApproachTime, "utility":data.runResult.ecApproachUtility});
+				json.bruteForce.push({"requests":data.runResult.numOfRequests,"time":roundUptoTwo(parseFloat(data.runResult.bruteForceTime)), "utility":roundUptoTwo(parseFloat(data.runResult.bruteForceUtility))});
+				json.ec.push({"requests":data.runResult.numOfRequests,"time":roundUptoTwo(parseFloat(data.runResult.ecApproachTime)), "utility":roundUptoTwo(parseFloat(data.runResult.ecApproachUtility))});
 				// TODO: change schema tpo add fcfs utilities
-				loneData.fcfsUtilities.push({"requests":data.runResult.numOfRequests, "utility":data.runResult.fcfsUtility});
+				loneData.fcfsUtilities.push({"requests":data.runResult.numOfRequests, "utility":roundUptoTwo(parseFloat(data.runResult.fcfsUtility))});
 
 				if(parseInt(data.runResult.bruteForceTime) > maxTimeTaken)
 					maxTimeTaken = parseInt(data.runResult.bruteForceTime);
