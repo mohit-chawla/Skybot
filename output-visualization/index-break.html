@@ -34,11 +34,11 @@
 		}
 		.c3 svg g g.c3-axis.c3-axis-x {
 		font: 17px sans-serif;
-		font-weight: bold;
+		font-weight: 500;
 		}
 		.c3 svg g g.c3-axis.c3-axis-y {
 		font: 17px sans-serif;
-		font-weight: bold;
+		font-weight: 500;
 		}
 		/*.c3-text{
 			font-size: 20px
@@ -87,6 +87,7 @@
 
 
 	<div id="visualization" class="col-md-offset-1"></div>
+	<div id="visualization-2" class="col-md-offset-1"></div>
 
 </div>
 
@@ -175,6 +176,58 @@
 		}
 
 		draw3dVis(dataFromDB);
+		function draw3dUtilityGraph(dataFromDB){
+				// Create and populate a data table.
+				var data = new vis.DataSet();
+				// create some nice looking data with sin/cos
+				// var counter = 0;
+				// var steps = 50;  // number of datapoints will be steps*steps ---- 1
+				// var axisMax = 314;
+				// var axisStep = axisMax / steps;
+
+				// for (var x = 0; x < axisMax; x+=axisStep) {
+				//     for (var y = 0; y < axisMax; y+=axisStep) {
+				//         var value = (Math.sin(x/50) * Math.cos(y/50) * 50 + 50);
+				//         data.add({id:counter++,x:x,y:y,z:value,style:value});
+				//     }
+				// }
+				var n_requests, 
+					n_generations, 
+					ec_utility,
+					counter = 0;
+				dataFromDB.forEach(function(d){
+					n_requests = parseInt(d.runResult.numOfRequests);
+					n_generations = parseInt(d.runResult.numOfGenerations);
+					ec_utility = parseInt(d.runResult.ecApproachUtility);
+					data.add({id:counter++,x:n_requests,y:n_generations,z:ec_utility,style:ec_utility});
+				});
+
+
+				// x: requests
+				// y: generations
+				// z: time taken
+
+				// specify options
+				var options = {
+				    width:  '800px',
+				    height: '850px',
+				    style: 'surface',
+				    showPerspective: true,
+				    showGrid: true,
+				    showShadow: false,
+				    keepAspectRatio: true,
+				    verticalRatio: 0.5,
+				    xLabel: 'requests',
+				    yLabel: 'generations',
+				    zLabel: 'ec approach utility'
+				};
+
+				// Instantiate our graph object.
+				var container = document.getElementById('visualization-2');
+				var graph3d = new vis.Graph3d(container, data, options);
+		}
+
+		draw3dUtilityGraph(dataFromDB);
 
 
 			var json = {"bruteForce": [], "ec": []};
@@ -465,9 +518,10 @@
 				    r: 8,
 				  },
 				  padding: {
-				    left: 100,
+				    left: 50,
 				    top:20,
 				    bottom:100,
+				    right:50,
 				  },
 				  legend:{
 				  	position:'inset'
@@ -652,6 +706,9 @@
 				padding:{
 					top:100,
 					left:80
+				},
+				legend:{
+					position:'inset'
 				},
 			    data: {
 			        // columns: [
@@ -844,7 +901,7 @@ setTimeout(function(){
 	    .attr('transform', "translate(" + 0 + "," + utilityGraph.internal.y(0) + ")");
 	// $('.c3 svg .tick text').attr('font-size', '20px');
 	// $('.c3-texts text').attr('font-weight', '900');
-	// $('#performanceGraphElement .c3-chart-texts text').attr('font-size', '10px');
+	$('#utilityGraphElement .c3-chart-texts text').attr('font-size', '11px');
 	// $('#utilityGraphElementLarge .c3-chart-texts text').attr('font-size', '20px');
 	// $('#utilityGraphElementSmall .c3-chart-texts text').attr('font-size', '20px');
 }, 3000);
