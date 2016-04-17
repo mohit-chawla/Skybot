@@ -88,7 +88,10 @@
 
 	<div id="visualization" class="col-md-offset-1"></div>
 	<div id="visualization-2" class="col-md-offset-1"></div>
-
+	<h1> Optimality Criterion</h1>	
+	<div id="optimality-criterion-div"></div>
+	<h1> Optimization Criterion</h1>	
+	<div id="optimization-criterion-div"></div>
 </div>
 
 
@@ -110,6 +113,8 @@
 	<script src="http://code.jquery.com/jquery-1.11.1.js"></script>
 	<script type="text/javascript">
 	function roundUptoTwo(num){
+		if(num === 0)
+			return 0;
 		var ans =  Math.round(num*100);
 		ans = ans/100;
 		// console.log("recieved"+num+"returnign"+ans);
@@ -122,6 +127,38 @@
 		//STEP1: Retreive data
 		// console.log(dataFromDB);
 		// var dataFromServer = JSON.parse(dataFromDB);
+		var requestsArr = [2,12,25,38,50,63,75,88];
+		var genArr = [3,8,13,18,22,27,31,36,40];
+		
+		genArr.forEach(function(gen){
+			requestsArr.forEach(function(req){
+				dataFromDB.forEach(function(d){
+					var ec;
+					if((parseFloat(d.runResult.numOfRequests) === req )&& (parseFloat(d.runResult.numOfGenerations) === gen) ){
+						ec = parseFloat(d.runResult.ecApproachUtility);
+						bf = parseFloat(d.runResult.bruteForceUtility);
+						fcfs = parseFloat(d.runResult.fcfsUtility);
+
+						if(bf !== 0){
+							var optimality = (bf-ec)/bf * -100;	
+						}
+						else{
+							var optimality =0;
+						}
+						if(fcfs !== 0){
+							var optimization = (ec-fcfs)/fcfs * -100;	
+						}
+						else{
+							var optimization =0;
+						}
+						$("#optimality-criterion-div").append("For "+req+" req and "+gen+" gen: "+ roundUptoTwo(optimality)+" % <br/>");
+						$("#optimization-criterion-div").append("For "+req+" req and "+gen+" gen: "+ roundUptoTwo(optimization)+" % <br/>");
+					}
+				});
+			});
+		});
+
+		
 
 
 		function draw3dVis(dataFromDB){
