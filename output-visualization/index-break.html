@@ -92,6 +92,8 @@
 	<div id="optimality-criterion-div"></div>
 	<h1> Optimization Criterion</h1>	
 	<div id="optimization-criterion-div"></div>
+	<h1> EC Time</h1>	
+	<div id="ec-time-div"></div>
 </div>
 
 
@@ -138,7 +140,7 @@
 						ec = parseFloat(d.runResult.ecApproachUtility);
 						bf = parseFloat(d.runResult.bruteForceUtility);
 						fcfs = parseFloat(d.runResult.fcfsUtility);
-
+						ec_time = parseFloat(d.runResult.ecApproachTime)
 						if(bf !== 0){
 							var optimality = (bf-ec)/bf * -100;	
 						}
@@ -153,6 +155,7 @@
 						}
 						$("#optimality-criterion-div").append("For "+req+" req and "+gen+" gen: "+ roundUptoTwo(optimality)+" % <br/>");
 						$("#optimization-criterion-div").append("For "+req+" req and "+gen+" gen: "+ roundUptoTwo(optimization)+" % <br/>");
+						$("#ec-time-div").append("For "+req+" req and "+gen+" gen: "+ roundUptoTwo(ec_time)+" milliseconds <br/>");
 					}
 				});
 			});
